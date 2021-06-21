@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default as useKeyboard } from \"./useKeyboard\";","map":{"version":3,"sources":["index.tsx"],"names":["default"],"mappings":"AAAA,SAASA,OAAO,IAAhB,WAAA","sourcesContent":["export { default as useKeyboard } from './useKeyboard';\n"]},"metadata":{},"sourceType":"module"}

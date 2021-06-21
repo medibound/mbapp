@@ -1,0 +1,10 @@
+{
+  "expoServerNgrokUrl": "https://uq-zgn.medibound.medibound.exp.direct",
+  "packagerNgrokUrl": "https://packager.uq-zgn.medibound.medibound.exp.direct",
+  "ngrokPid": 16436,
+  "webpackServerPort": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19000,
+  "packagerPid": null,
+  "devToolsPort": 19002
+}
