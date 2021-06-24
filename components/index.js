@@ -1,6 +1,7 @@
 import BottomTab from './navigation/BottomTab';
 
 import CodeVerify from './server/CodeVerify'
+import DeviceList from './server/DeviceList'
 
 export const Objects = { 
     Navigation: {
@@ -8,5 +9,6 @@ export const Objects = {
     },
     Server: {
         CodeVerify,
+        DeviceList,
     }
 }

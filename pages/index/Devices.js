@@ -58,7 +58,7 @@ class Devices extends Component {
                         <Button titleStyle={{fontWeight: "600", color: "#777777", fontSize:16,justifyContent:"center",alignContent:"center",marginLeft: 5,}} buttonStyle={webStyles.grayButton} containerStyle={{flex: buttonDiff.whiteButton}} icon={<Icon name="radio" size={15} color="#777777"/>} title="TAP TO ADD"></Button>
                     </View>
                     
-                
+                    <Objects.Server.DeviceList></Objects.Server.DeviceList>
 
                     <StatusBar style="auto" backgroundColor="rgb(68, 199, 188)" barStyle="dark-content" />
                     <Portal>
