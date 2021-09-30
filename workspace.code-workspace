@@ -1,0 +1,67 @@
+{
+	"folders": [
+		{
+			"name": "React proj",
+			"path": "..\\..\\..\\Documents\\react-native-ble-plx-demo-master\\React proj"
+		},
+		{
+			"name": "medibound",
+			"path": "..\\..\\MBAPP\\medibound2\\medibound"
+		},
+		{
+			"name": ".git",
+			"path": "..\\..\\PWAPP\\pathwaysplotter\\nextjs-blog\\.git"
+		},
+		{
+			"name": "Plotter Code",
+			"path": "..\\..\\..\\Documents\\react-native-ble-plx-demo-master\\Plotter Code"
+		},
+		{
+			"name": "electron-serial",
+			"path": "..\\..\\..\\Documents\\react-native-ble-plx-demo-master\\electron-serial"
+		},
+		{
+			"name": "Mod8",
+			"path": "..\\..\\COMPSCIA\\Mod8"
+		},
+		{
+			"name": "pixLab",
+			"path": "D:\\Downloads\\pixLab (1)\\pixLab"
+		},
+		{
+			"name": "icons",
+			"path": "D:\\Downloads\\electron-seamless-titlebar-tutorial-master\\electron-seamless-titlebar-tutorial-master\\src\\icons"
+		},
+		{
+			"name": "electron-bingo",
+			"path": "..\\..\\..\\Documents\\bingo\\electron-bingo"
+		},
+		{
+			"name": "bdsx-master",
+			"path": "..\\..\\..\\Documents\\bdsx-master\\bdsx-master"
+		},
+		{
+			"name": "web-bingo",
+			"path": "..\\..\\..\\Documents\\bingo\\web-bingo"
+		},
+		{
+			"name": "bdsx-nbt",
+			"path": "D:\\Downloads\\bdsx-nbt (1)\\bdsx-nbt"
+		},
+		{
+			"name": "electron-bingo",
+			"path": "..\\..\\..\\Documents\\bingo\\workspace\\electron-bingo"
+		},
+		{
+			"name": "testproj",
+			"path": "."
+		},
+		{
+			"path": "..\\nextjs-blog"
+		},
+		{
+			"path": "D:\\Downloads\\HartyBot-discord-bot\\HartyBot-discord-bot"
+		}
+	],
+	"settings": {}
+}

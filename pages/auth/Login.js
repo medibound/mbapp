@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Text, TextInput, View, ImageBackground, Animated, Dimensions, TouchableWithoutFeedback, Keyboard, Platform} from 'react-native';
+import { StyleSheet,StatusBar, Image, Text, TextInput, View, ImageBackground, Animated, Dimensions, TouchableWithoutFeedback, Keyboard, Platform} from 'react-native';
 import { Button } from 'react-native-elements';
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -12,6 +11,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
 
 
 const window = Dimensions.get("window");
@@ -38,21 +38,47 @@ export class Login extends Component {
     this.onSignIn = this.onSignIn.bind(this)
   }
 
-  onSignIn() {
+  async onSignIn() {
     const { email, password } = this.state;
-    firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((result) => {
-            console.log(result);
-        })
-        .catch((error) => {
-            console.log(error)
-            this.setState({errorMessage: error.message});
+    const result = await axios.post("https://manage.medibound.com/api/checkUserAccount", {email: email}).catch(err => {
+      firebase.auth().signInWithEmailAndPassword(email + "@example.com", password)
+          .then((result) => {
+              console.log(result);
+          })
+          .catch((error) => {
+                console.log(error)
+                this.setState({errorMessage: error.message});
+                Animated.timing(this.state.fadeError, {
+                  toValue: 1,
+                  duration: 1000,
+                  useNativeDriver: true,
+                }).start();
+              
+          })
+    });
+    console.log(result);
+    if (result.data == false)  {
+      this.setState({errorMessage: "Admin Accounts Cannot Login Here"});
             Animated.timing(this.state.fadeError, {
               toValue: 1,
               duration: 1000,
               useNativeDriver: true,
             }).start();
-        })
+    }
+    else if (result.data == true) {
+        await firebase.auth().signInWithEmailAndPassword(email, password).then((result) => {
+          console.log(result);
+        }).catch((error) => {
+          console.log(error)
+          this.setState({errorMessage: error.message});
+          Animated.timing(this.state.fadeError, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        });
+      
+    }
   }
 
   
@@ -86,30 +112,23 @@ export class Login extends Component {
   render() {
     return (
     <TouchableWithoutFeedback onPress={Platform.OS == 'web' ? null : Keyboard.dismiss} >
-    <SafeAreaView style={{backgroundColor: "white", flex: 1}} >  
-    <ScrollView alwaysBounceHorizontal={true} contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
-    <ImageBackground source={require('../../src/assets/img/hex.jpg')} style={styles.body}>    
-      <LinearGradient colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 1)']} style={styles.linearGradient}>
+    <SafeAreaView style={{backgroundColor: "#121212", flex: 1,borderWidth: 1, borderColor: "#121212"}} >  
+    <ScrollView alwaysBounceHorizontal={true} contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.innerbody}>
 
-          <View style={styles.loginimg}>
-            <ImageBackground source={require('../../src/assets/img/hex.jpg')} style={styles.image}>
-              <LinearGradient colors={['rgba(74, 191, 217, 0.7)', 'rgba(114, 212, 192,1)']} style={styles.linearGradient}>
-                
-              </LinearGradient>
-            </ImageBackground>
-          </View>
 
           <View style={[styles.login, {minHeight: "auto", marginVertical: 20, alignSelf: 'center'}]}>
             <View style={{flexDirection: 'row', width: "95%", justifyContent: 'center', alignItems: 'center', alignContent: 'center'}}>
-              <Ionicons name="cube" size={30} color="rgb(68, 199, 188)" style={{marginBottom: 10, marginRight: 10}}/>
-              <View style={styles.loginTitle}><Text style={{"fontSize" : 18,"fontWeight" : '600', "letterSpacing" : 3,color: "#777777"}}>SIGN IN TO MEDIBOUND</Text></View>
+              <Image source={require('../../assets/logo2.png')} style={{width: 30, height: 30, marginRight: 10, marginBottom: 10,}}></Image>
+              <View style={styles.loginTitle}><Ionicons name="chevron-forward-outline" color="white" size={20}></Ionicons><Text style={{marginLeft: 10,"fontSize" : 18,"fontWeight" : '600', "letterSpacing" : 3,color: "white"}}>SIGN IN TO PATHWAYS</Text></View>
             </View>
+
+            <Text style={{color: this.state.input1 ? "#00ff79" : "#b0b4b3", alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Email</Text>
             <Ionicons name={"mail"} style={this.state.input1 ? styles.loginIconFocus : styles.loginIcon} size={15} />
             <TextInput
-              style={this.state.input1 ? styles.loginInputFocus : styles.loginInput}
+              style={[this.state.input1 ? styles.loginInputFocus : styles.loginInput, {color: "white"}]}
               placeholder="Email"
-              placeholderTextColor={this.state.input1 ? "rgb(68, 199, 188)" : "#b0b4b3"}
+              placeholderTextColor={this.state.input1 ? "#00ff79" : "#b0b4b3"}
               keyboardType="email-address"
               onSubmitEditing={() => this.onSignIn()}
               onFocus={this.setFocus1.bind(this, true)}
@@ -117,12 +136,13 @@ export class Login extends Component {
               autoCompleteType="email"
               onChangeText={(email) => this.setState({email: email})}
             />
+            <Text style={{color: this.state.input2 ? "#00ff79" : "#b0b4b3", alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Password</Text>
             <Ionicons name={"lock-closed"} style={this.state.input2 ? styles.loginIconFocus : styles.loginIcon} size={15} />
             <TextInput
-              style={this.state.input2 ? styles.loginInputFocus : styles.loginInput}              
+              style={[this.state.input2 ? styles.loginInputFocus : styles.loginInput, {color: "white"}]}              
               placeholder="Password"
               keyboardType="default"
-              placeholderTextColor={this.state.input2 ? "rgb(68, 199, 188)" : "#b0b4b3"}
+              placeholderTextColor={this.state.input2 ? "#00ff79" : "#b0b4b3"}
               secureTextEntry={true}
               onSubmitEditing={() => this.onSignIn()}
               onFocus={this.setFocus2.bind(this, true)}
@@ -133,12 +153,12 @@ export class Login extends Component {
             
             <Animated.View style={[styles.error, {opacity: this.state.fadeError}, {display: this.state.displayError}]} >
               <FontAwesomeIcon style={styles.errorIcon} icon={ faExclamationCircle } />
-              <Text style={{color: "#d36e6e", fontWeight: "400",padding: 5}}>{this.state.errorMessage}</Text>
+              <Text style={{color: "white", fontWeight: "400",padding: 5}}>{this.state.errorMessage}</Text>
             </Animated.View>
 
-            <Button titleStyle={{color: "#777777",fontSize: 12,textDecorationLine:"underline"}} buttonStyle={styles.flipButton} onPress={() => this.props.navigation.navigate("Register")} color="black" title="CREATE AN ACCOUNT"/>
+            <Button titleStyle={{color: "#dae0df",fontSize: 12,textDecorationLine:"underline"}} buttonStyle={styles.flipButton} onPress={() => this.props.navigation.navigate("Register")} color="black" title="CREATE AN ACCOUNT"/>
 
-            <Button titleStyle={{fontWeight: "600", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={styles.loginButtonContainer} buttonStyle={styles.loginButton} 
+            <Button titleStyle={{"color": "#121212",fontWeight: "600", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={styles.loginButtonContainer} buttonStyle={styles.loginButton} 
               title="LOG IN"
               onPress={() => this.onSignIn()}
               color="transparent"/>
@@ -146,10 +166,8 @@ export class Login extends Component {
           </View>
 
           
-          <StatusBar style="auto" backgroundColor="rgb(68, 199, 188)" barStyle="dark-content" />
+          <StatusBar style="auto" backgroundColor="#00ff79" barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
         </View>
-      </LinearGradient>
-    </ImageBackground>
     </ScrollView>
     </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -195,10 +213,6 @@ var webStyles = StyleSheet.create({
       "flexDirection": "row",
       "width": 800,
       "height": 550,
-      "alignSelf": "center",
-      "justifyContent": "center",
-      borderRadius: 10,
-      "backgroundColor": "white",
       "shadowOffset": {
         "width": 0,
         "height": 0
@@ -221,7 +235,6 @@ var webStyles = StyleSheet.create({
       "justifyContent": "center",
       "textAlign": "center",
       "alignItems": "center",
-      "backgroundColor": "white",
       "width": "60%",
       "paddingTop": 40,
       "paddingRight": 40,
@@ -246,13 +259,12 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 40,
-      "backgroundColor": "#f4f8f7",
       "borderColor": "#dae0df",
       "borderWidth": 1,
       "borderStyle": "solid",
       borderRadius: 5,
       "width": "100%",
-      "height": 50
+      "height": 50,
     },
 
     loginInputFocus: {
@@ -261,13 +273,13 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 40,
-      "backgroundColor": "rgb(240, 255, 254)",
-      "borderColor": "rgb(68, 199, 188)",
+      "borderColor": "#00ff79",
       "borderWidth": 1,
       "borderStyle": "solid",
       borderRadius: 5,
       "width": "100%",
-      "height": 50
+      "height": 50,
+
     },
 
     loginIcon: {
@@ -278,7 +290,7 @@ var webStyles = StyleSheet.create({
       "top": 34,
       "marginTop":-15,
       "alignSelf": "flex-start",
-      "color": "#b0b4b3"
+      "color": "#b0b4b3",
     },
 
     loginIconFocus: {
@@ -289,7 +301,7 @@ var webStyles = StyleSheet.create({
       "top": 34,
       "marginTop":-15,
       "alignSelf": "flex-start",
-      "color": "rgb(68, 199, 188)"
+      "color": "#00ff79"
     },
 
     loginForm: {
@@ -304,7 +316,7 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 2.5,
-      "backgroundColor": "rgb(68, 199, 188)",
+      "backgroundColor": "#00ff79",
       "shadowOffset": {
         "width": 0,
         "height": 0
@@ -332,7 +344,7 @@ var webStyles = StyleSheet.create({
       display: "none",
       "justifyContent" : "center",
       "paddingLeft": 35,
-      "backgroundColor": "#ffe0e0",
+      "backgroundColor": "#d36e6e",
       "textAlign": "left",
       "lineHeight": 25,
       "borderWidth": 0,
@@ -341,7 +353,7 @@ var webStyles = StyleSheet.create({
       borderRadius: 5,
       "width": "100%",
       "height": "auto",
-      "color": "#d36e6e",
+      "color": "white",
       "overflow": "hidden",
       "fontFamily": "sfd-light",
       "fontWeight": "400"
@@ -351,9 +363,9 @@ var webStyles = StyleSheet.create({
       "width": 13,
       "zIndex": 2,
       "position": "absolute",
-      "top" : 7,
+      "top" : 6,
       "left" : 10,
-      "color": "#d36e6e"
+      "color": "white"
     },
 
     flipButton: {
@@ -363,24 +375,13 @@ var webStyles = StyleSheet.create({
   });
 
   const mobileStyles = StyleSheet.create({
-    linearGradient: {
-      width: '100%',
-      height: '100%',
-      opacity: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      "paddingTop": 0,
-      "paddingRight": 0,
-      "paddingBottom": 0,
-      "paddingLeft": 0,
-    },
+
     login: {
       "flexDirection": "column",
       "alignContent": "center",
       "justifyContent": "center",
       "textAlign": "center",
       "alignItems": "center",
-      "backgroundColor": "white",
       "width": "90%",
       "paddingTop": 0,
       "paddingRight": 0,
@@ -396,7 +397,6 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 40,
-      "backgroundColor": "#f4f8f7",
       "borderColor": "#dae0df",
       "borderWidth": 1,
       "borderStyle": "solid",
@@ -409,7 +409,7 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 2.5,
-      "backgroundColor": "rgb(68, 199, 188)",
+      "backgroundColor": "#00ff79",
       "shadowOffset": {
         "width": 0,
         "height": 0
@@ -432,17 +432,16 @@ var webStyles = StyleSheet.create({
       "width": "100%",
     },
     innerbody: {
-      "flexDirection": "row",
+      "flexDirection": "column",
       "width": "100%",
       "height": "100%",
-      "alignSelf": "center",
+      "alignSelf": "flex-start",
       "justifyContent": "center",
-      "backgroundColor": "white",
-      borderRadius: 5,
       "shadowOffset": {
         "width": 0,
         "height": 0
       },
+      borderWidth: 0,
       "shadowRadius": 50,
       "shadowColor": "rgba(0,0,0,0.15)",
       "shadowOpacity": 1,
@@ -452,12 +451,7 @@ var webStyles = StyleSheet.create({
   });
 
   var styles = webStyles;
+  styles = StyleSheet.flatten([webStyles,mobileStyles]);
 
-  if (window.width < 801) {
-    styles = StyleSheet.flatten([webStyles,mobileStyles]);
-  }
-  else {
-    styles = webStyles;
-  }
   
   export default Login;

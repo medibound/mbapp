@@ -1,15 +1,17 @@
 {
+  "name": "testproj",
+  "displayName": "Pathways",
   "expo": {
-    "name": "Medibound",
-    "slug": "medibound",
-    "scheme": "medibound",
+    "name": "testproj",
+    "slug": "testproj",
+    "scheme": "testproj",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#44c7bc"
+      "backgroundColor": "#121212"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -18,21 +20,21 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#121212"
       },
-      "package": "com.medibound.dev",
+      "package": "com.medibound.testproj"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "androidNavigationBar": {
-      "barStyle": "dark-content",
-      "backgroundColor": "#ffffff"
+      "barStyle": "light-content",
+      "backgroundColor": "#121212"
     }
   }
 }

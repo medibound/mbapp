@@ -13,8 +13,7 @@ import 'react-native-gesture-handler';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
 import { Host, Portal } from 'react-native-portalize';
-
-import * as Linking from 'expo-linking';
+import { AnimatedTabBarNavigator } from "react-native-animated-nav-tab-bar";
 
 import firebase from 'firebase';
 
@@ -22,10 +21,12 @@ import {Pages} from '../../pages/index';
 import { screensEnabled } from 'react-native-screens';
 
 const Tab = createBottomTabNavigator();
-const prefix = Linking.createURL('/');
 
 const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
+
+const Tabs = AnimatedTabBarNavigator();
+
 
 export default class BottomTab extends Component {
 
@@ -35,32 +36,23 @@ export default class BottomTab extends Component {
       super(props)
       this.state = {
         loaded: false,
-        bounceValue1: new Animated.Value(1),
-        bounceValue2: new Animated.Value(1),
-        bounceValue3: new Animated.Value(1),
-        bounceValue4: new Animated.Value(1),
         areResourcesReady: false,
-        account: "",
-        tabAltName: "Null",
-        tabAltComp: Pages.Users,
+        accountType: 0,
       };
-      if (firebase.auth().currentUser) {
-        this.data = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).onSnapshot(doc => {
-          this.setState({
-              account: doc.data().accounttype,
-          })
-        });
-      };
-
-      this.bounce1.bind(this);
-      this.bounce2.bind(this);
-      this.bounce3.bind(this);
-      this.bounce4.bind(this);
+      this.data = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).onSnapshot(doc => {
+        this.setState({
+          accountType: doc.data().accounttype,
+        })
+      });
+      
     }
 
 
     componentDidMount = async() => {
       this._isMounted = true;
+
+
+      
 
       await firebase.auth().onAuthStateChanged((user) => {
         if (this._isMounted) {
@@ -70,42 +62,15 @@ export default class BottomTab extends Component {
               loaded: true,
             })
           } else {
-            firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).onSnapshot(doc => {
-              var accounttype = doc.data().accounttype;
-              this.setState({
-                  account: doc.data().accounttype,
-              })
-              if(accounttype == 0) {
-                this.setState({
-                  tabAltName: "Partners",
-                  tabAltComp: Pages.Partners,
-                });
-                console.log("success");
-                if (this.state.tabAltName == "Users" || this.state.tabAltName == "Partners") {
-                  this.setState({
-                    loggedIn: true,
-                    loaded: true,
-                  });
-                }
-                console.log("load");
-              }
-              else if (accounttype == 1) {
-                this.setState({
-                  tabAltName: "Users",
-                  tabAltComp: Pages.Users,
-                });
-                if (this.state.tabAltName == "Users" || this.state.tabAltName == "Partners") {
-                  this.setState({
-                    loggedIn: true,
-                    loaded: true,
-                  });
-                }
-                console.log("load");
-              }
+            this.setState({
+              loggedIn: true,
+              loaded: true,
             });
           }
         }
         });
+      
+        
     }
 
     componentWillUnmount() {
@@ -119,175 +84,111 @@ export default class BottomTab extends Component {
         })
     }
 
-    bounce1(){
-        this.state.bounceValue1.setValue(1.1);
-        Animated.spring(
-          this.state.bounceValue1, {
-            useNativeDriver: true,
-            toValue: 1,
-            friction: 1.5,
-          }
-        ).start();
-    }
-
-    bounce2(){
-      this.state.bounceValue2.setValue(1.1);
-      Animated.spring(
-        this.state.bounceValue2, {
-          useNativeDriver: true,
-          toValue: 1,
-          friction: 1.5,
-        }
-      ).start();
-    }
-
-    bounce3(){
-      this.state.bounceValue3.setValue(1.1);
-      Animated.spring(
-        this.state.bounceValue3, {
-          useNativeDriver: true,
-          toValue: 1,
-          friction: 1.5,
-        }
-      ).start();
-    }
-
-    bounce4(){
-      this.state.bounceValue4.setValue(1.1);
-      Animated.spring(
-        this.state.bounceValue4, {
-          useNativeDriver: true,
-          toValue: 1,
-          friction: 1.5,
-        }
-      ).start();
-    }
-
 
     render() {
   
-      const linking = {
-        prefixes: [prefix],
-        config: {
-          screens: {
-            Login: 'login',
-            Register: 'join',
-            Home: '',
-            Devices: 'devices',
-            Users: 'users',
-            Partners: 'partners',
-            Account: 'account'
-          }
-        },
-      };
-    
-      return (
-        <>
-        <NavigationContainer linking={linking}  >
-          <Host>
-          <Tab.Navigator 
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-              let bounceLabel;
-
-              if (route.name === 'Home') {
-                iconName = focused 
-                  ? 'cube' 
-                  : 'cube-outline';
-                bounceLabel = focused 
-                ? this.state.bounceValue1
-                : 1;
-              }
-              else if (route.name === 'Devices') {
-                iconName = focused 
-                  ? 'layers' 
-                  : 'layers-outline';
-                bounceLabel = focused 
-                ? this.state.bounceValue2
-                : 1;
-              }
-              else if (route.name === 'Users') {
-                iconName = focused
-                  ? 'people'
-                  : 'people-outline';
-                bounceLabel = focused 
-                ? this.state.bounceValue3
-                : 1;
-              }
-              else if (route.name === 'Partners') {
-                iconName = focused
-                  ? 'business'
-                  : 'business-outline';
-                bounceLabel = focused 
-                ? this.state.bounceValue3
-                : 1;
-              }  
-              else if (route.name === 'Account') {
-                iconName = focused 
-                  ? 'person' 
-                  : 'person-outline';
-                bounceLabel = focused 
-                  ? this.state.bounceValue4
-                  : 1;
-              }
-
-              // You can return any component that you like here!
-              return (
-                <Animated.View  >
-                  <TouchableHighlight  style={{scaleX: bounceLabel, scaleY: bounceLabel}}>
-                    <Ionicons name={iconName} size={27} color={color}/>
-                  </TouchableHighlight>
-                </Animated.View>);
-            },
-          })}
-          tabBarOptions={{
-            activeTintColor: 'rgb(68, 199, 188)',
-            inactiveTintColor: '#777777',
-            allowFontScaling: true,
-            style: { position: "relative",  marginTop: 5, shadowColor: "white", elevation: 0, borderTopWidth: 0, borderTopColor: "#dae0df",   backgroundColor: "white", marginBottom: 0,  "shadowOffset": {"width": 0,"height": -10},"shadowRadius": 50,"shadowColor": "#fbfbfb","shadowOpacity": 1,},
-            tabStyle: { backgroundColor: "white", },
-            labelStyle: {paddingBottom: 10},
-          }} 
-        >
-            <Tab.Screen name="Home" component={Pages.Home} listeners={({ navigation, route }) => ({
-              tabPress: e => {
-                // Prevent default action
-                e.preventDefault();
-                this.bounce1();
-                navigation.navigate('Home');
-              },
-            })}/>
-            <Tab.Screen name="Devices" component={Pages.Devices} listeners={({ navigation, route }) => ({
-              tabPress: e => {
-                // Prevent default action
-
-                e.preventDefault();
-                this.bounce2();
-                navigation.navigate("Devices");
-              },
-            })}/>
-            <Tab.Screen name={this.state.tabAltName} component={this.state.tabAltComp} listeners={({ navigation, route }) => ({
-              tabPress: e => {
-                // Prevent default action
-                e.preventDefault();
-                this.bounce3();
-                navigation.navigate(this.state.tabAltName);
-              },
-            })}/>
-            <Tab.Screen name="Account" component={Pages.Account} listeners={({ navigation, route }) => ({
-              tabPress: e => {
-                // Prevent default action
-                e.preventDefault();
-                this.bounce4();
-                navigation.navigate('Account');
-              },
-            })}
-            />
-          </Tab.Navigator>
-          </Host>
-        </NavigationContainer>
-      </>
-      );
+      if (this.state.accountType == 0) {
+        return (
+          <>
+          <NavigationContainer>
+              <Tabs.Navigator
+                // default configuration from React Navigation
+                tabBarOptions={{
+                  activeTintColor: "#00d6a1",
+                  inactiveTintColor: "#ddd",
+                  activeBackgroundColor: "#004030",
+                  tabStyle: {
+                    borderTopColor: "#222222",
+                    borderTopWidth: 1,
+                  }
+                }}
+                appearance={{
+                  tabBarBackground: "#121212",
+                  dotCornerRadius: 100,
+                }}
+              >
+                <Tabs.Screen name={"Home"} component={Pages.Pathways} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"cube"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }} />
+                <Tabs.Screen name="Partners" component={Pages.Partners} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"shield-checkmark"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+                <Tabs.Screen name="Reports" component={Pages.Reports} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"pie-chart"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+                <Tabs.Screen name="Account" component={Pages.Account} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"person"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+  
+              </Tabs.Navigator>
+            </NavigationContainer>
+        </>
+        
+        );
+      }
+      else {
+        return (
+          <>
+          <NavigationContainer>
+              <Tabs.Navigator
+                // default configuration from React Navigation
+                tabBarOptions={{
+                  activeTintColor: "#00d6a1",
+                  inactiveTintColor: "#ddd",
+                  activeBackgroundColor: "#004030",
+                  tabStyle: {
+                    borderTopColor: "#222222",
+                    borderTopWidth: 1,
+                  }
+                }}
+                appearance={{
+                  tabBarBackground: "#121212",
+                  dotCornerRadius: 100,
+                }}
+              >
+                <Tabs.Screen name={"Home"} component={Pages.Pathways} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"cube"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }} />
+                <Tabs.Screen name="Devices" component={Pages.Device} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"layers"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+                <Tabs.Screen name="Users" component={Pages.Users} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"people"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+                <Tabs.Screen name="Account" component={Pages.Account} 
+                options={{
+                  tabBarIcon: ({ focused, color, size }) => (
+                    <Ionicons name={"person"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                  )
+                }}/>
+  
+              </Tabs.Navigator>
+            </NavigationContainer>
+        </>
+        
+        );
+      }
+      
     }
 }

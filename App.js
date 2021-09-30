@@ -1,7 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {Component, useEffect, usetst} from 'react';
-import { StyleSheet, Text, TextInput, View, ImageBackground, Dimensions, Button, Easing, SafeAreaView, Keyboard, Animated} from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, StatusBar, Text, TextInput, View, ImageBackground, Dimensions, Button, Easing, SafeAreaView, Keyboard, Animated} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native'
+import NavigationBar from 'react-native-navbar-color'
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
@@ -15,8 +15,6 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
 import { Host, Portal } from 'react-native-portalize';
 
-import * as Linking from 'expo-linking';
-
 import firebase from 'firebase';
 import {injectWebCss} from './pages/libraries/css'
 
@@ -27,6 +25,8 @@ injectWebCss();
 
 const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
+
+NavigationBar.setColor('#121212')
 
 
 const Screen = {
@@ -50,8 +50,6 @@ if(firebase.apps.length === 0) {
 }
 
 const Stack = createStackNavigator();
-
-const prefix = Linking.createURL('/');
 
 const MyTransition = {
   gestureDirection: 'horizontal',
@@ -98,6 +96,8 @@ const MyTransition = {
   },
 }
 
+console.log(window.height-screen.height)
+
 var showTopBar = true;
 
 export class App extends Component {
@@ -113,6 +113,10 @@ export class App extends Component {
   }
 
   componentDidMount = async() => {
+
+
+    firebase.firestore().settings({ experimentalForceLongPolling: true });
+
     this._isMounted = true;
 
     await firebase.auth().onAuthStateChanged((user) => {
@@ -123,42 +127,16 @@ export class App extends Component {
             loaded: true,
           })
         } else {
-          firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).onSnapshot(doc => {
-            var accounttype = doc.data().accounttype;
             this.setState({
-                account: doc.data().accounttype,
-            })
-            if(accounttype == 0) {
-              this.setState({
-                tabAltName: "Partners",
-                tabAltComp: Pages.Partners,
-              });
-              console.log("success");
-              if (this.state.tabAltName == "Users" || this.state.tabAltName == "Partners") {
-                this.setState({
-                  loggedIn: true,
-                  loaded: true,
-                });
-              }
-              console.log("load");
-            }
-            else if (accounttype == 1) {
-              this.setState({
-                tabAltName: "Users",
-                tabAltComp: Pages.Users,
-              });
-              if (this.state.tabAltName == "Users" || this.state.tabAltName == "Partners") {
-                this.setState({
-                  loggedIn: true,
-                  loaded: true,
-                });
-              }
-              console.log("load");
-            }
-          });
+              loggedIn: true,
+              loaded: true,
+          })
+          
         }
       }
       });
+    
+    
   }
 
   componentWillUnmount() {
@@ -166,21 +144,6 @@ export class App extends Component {
   }
 
   render() {
-
-    const linking = {
-      prefixes: [prefix],
-      config: {
-        screens: {
-          Login: 'login',
-          Register: 'join',
-          Home: '',
-          Devices: 'devices',
-          Users: 'users',
-          Partners: 'partners',
-          Account: 'account'
-        }
-      },
-    };
 
     const {loggedIn, loaded} = this.state;
 
@@ -202,11 +165,11 @@ export class App extends Component {
     }
     if (!loggedIn) {
       return (
-        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <NavigationContainer linking={linking}>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: "#121212"}}>
+          <NavigationContainer >
             <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen name="Login" component={Pages.Auth.Login} options={{ headerShown: false, headerTitleStyle:{color: "black"}, headerBackTitleStyle: {color: "black"}} } navigation={this.props.navigation}/>
-              <Stack.Screen name="Register" component={Pages.Auth.Register} options={{ headerShown: showTopBar, ...MyTransition ,headerBackImage: () => <Ionicons style={{paddingLeft: 0}} name="chevron-back-circle-outline" size={36} color="rgb(68, 199, 188)"/>, headerBackTitleVisible: false, headerTransparent: true, headerTitle: false,} } navigation={this.props.navigation}/>
+              <Stack.Screen name="Login" component={Pages.Auth.Login} options={{ headerShown: false, headerTitleStyle:{color: "white"}, headerTransparent: true, headerBackTitleStyle: {color: "black"}} } navigation={this.props.navigation}/>
+              <Stack.Screen name="Register" component={Pages.Auth.Register} options={{ headerShown: false,  headerTitleStyle:{color: "white"}, headerTransparent: true,...MyTransition }} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaProvider>  
@@ -215,8 +178,10 @@ export class App extends Component {
 
 
     return (
-      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: "white", position: "relative" }}> 
+      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: "#121212", position: "absolute", height: screen.height-(screen.height-window.height+StatusBar.currentHeight), width: screen.width, }}> 
+          <Host>
           <Objects.Navigation.BottomTab/>
+          </Host>
       </SafeAreaProvider>
       
     );

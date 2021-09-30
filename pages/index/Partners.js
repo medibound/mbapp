@@ -1,43 +1,120 @@
-import React, {Component} from 'react'
-import { Text, View, Button, StatusBar, Platform, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native'
-import { TextInput } from 'react-native-gesture-handler';
+import React, {Component, useRef} from 'react'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Text, KeyboardAvoidingView, TextInput, View, StatusBar, StyleSheet, Dimensions, Platform } from 'react-native'
+import {Button} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
+import BottomSheet from 'react-native-bottomsheet-reanimated';
+import { Host, Portal } from 'react-native-portalize';
+
+import {Objects} from '../../components/index';
+
+const Screen = {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  };
+
+var buttonDiff;
+var sheetDiff = "0";
+
+if (Platform.OS == "ios") {
+    sheetDiff = "-70"
+}
+else if (Platform.OS == "android") {
+    sheetDiff = "20"
+}
+
+if (Platform.OS == "web") {
+    buttonDiff = {
+        greenButton: 1, 
+        whiteButton: 0,
+    };
+}
+else {
+    buttonDiff = {
+        greenButton: 0.48, 
+        whiteButton: 0.48,
+    };
+}
+
 
 class Partners extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedDeviceID: "",
+            hasFocus: false,
+            search: "",
+        }
+    }
+
+    changeText(searchTerm){
+        this.setState({search: searchTerm});
+    }
+
+    onOpenBottomSheetHandler = (index) => {
+        this.refs.BottomSheet.snapTo(index);
+
+      };
+    onOpenDeviceOptionsHandler = (index, deviceID) => {
+        this.refs.DeviceOptions.snapTo(index);
+        if (deviceID != null) {
+            this.setState({selectedDeviceID: deviceID})
+        }
+      }
+    
     render() {
+
+        const {selectedDeviceID} =  this.state;
+
         return(
-            <TouchableWithoutFeedback onPress={Platform.OS == 'web' ? null : Keyboard.dismiss} >
-                <View style={{height: "100%", width: "100%", backgroundColor: "white", paddingBottom: 5}}>
-                    <SafeAreaView style={webStyles.body}>
-                        <Ionicons name="search" size={20} style={webStyles.searchIcon}/>
-                        <TextInput style={webStyles.searchInput} placeholder="Search Partners..."></TextInput>
-                        <Text>Bruh</Text>
-                        <StatusBar style="auto" backgroundColor="rgb(68, 199, 188)" barStyle="dark-content" />
-                    </SafeAreaView>
-                </View>
-            </TouchableWithoutFeedback>
+            <KeyboardAvoidingView  style={{height: "100%", width: "100%", backgroundColor: "white"}}>
+                <SafeAreaView style={webStyles.body}>
+                    <View style={{padding: 10}}>
+                    
+                        <Icon style={webStyles.searchIcon} name={"search"} size={20} color={"#121212"}></Icon>
+                        <TextInput 
+                            style={this.state.hasFocus ? webStyles.searchInputFocused : webStyles.searchInput}
+                            onChangeText={(search) => {this.changeText(search)}}
+                            placeholder="Search Medical Partners"
+                            placeholderTextColor="#888888"
+                        />
+                    </View>
+                    
+
+                    <Objects.Server.PartnerList pass={this.onOpenDeviceOptionsHandler} search={this.state.search}></Objects.Server.PartnerList>
+                    
+
+                    <StatusBar style="auto" backgroundColor="#00d6a1" barStyle="dark-content" />
+                
+                </SafeAreaView>
+            </KeyboardAvoidingView>
+                        
         )
+    }
+
+    setFocus (hasFocus) {
+        this.setState({hasFocus});
     }
 
 }
 
 var webStyles = StyleSheet.create({
     body: {
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#121212",
         height: "100%",
         width: "100%",
         overflow: "scroll",
         padding: 0,
-        borderBottomLeftRadius: 30, 
-        borderBottomRightRadius: 30,
-        borderColor: "#dddddd", 
-        borderLeftWidth: 1,
-        borderRightWidth: 1,
-        borderBottomWidth: 1,
         zIndex: 10,
-        paddingHorizontal: 15, 
-        paddingTop: 10,
+    },
+    topBarButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        width: "100%",
     },
     searchInput: {
         "marginBottom": 10,
@@ -45,14 +122,33 @@ var webStyles = StyleSheet.create({
         "paddingRight": 2.5,
         "paddingBottom": 2.5,
         "paddingLeft": 40,
-        "backgroundColor": "white",
-        "borderWidth": 0,
-        "borderColor": "#b0b4b3",
-        "borderWidth": 1,
-        "borderStyle": "solid",
-        borderRadius: 7,
+        "backgroundColor": "#222222",
+        borderRadius: 10,
+        color: "#888888",
         "width": "100%",
-        "height": 50,
+        "height": 45,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 4.65,
+        elevation:6,
+      },
+      searchInputFocused: {
+        "marginBottom": 10,
+        "paddingTop": 2.5,
+        "paddingRight": 2.5,
+        "paddingBottom": 2.5,
+        "paddingLeft": 40,
+        "backgroundColor": "#121212",
+        borderRadius: 10,
+        borderColor: "#888888",
+        borderWidth: 1,
+        color: "#888888",
+        "width": "100%",
+        "height": 45,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -67,12 +163,43 @@ var webStyles = StyleSheet.create({
         "zIndex": 10,
         "left" : 15,
         "position" : "relative",
-        "top": 36,
+        "top": 34,
         "marginTop":-15,
         "alignSelf": "flex-start",
-        "color": "#b0b4b3",
+        "color": "#888888",
         elevation:6,
       },
+    greenButton: {
+        "paddingTop": 2.5,
+      "paddingRight": 2.5,
+      "paddingBottom": 2.5,
+      "paddingLeft": 2.5,
+      "backgroundColor": "rgb(68, 199, 188)",
+      "borderStyle": "solid",
+      "color": "white",
+      "fontFamily": "sfd",
+      "fontSize": 13,
+      "fontWeight": "400",
+      borderRadius: 5,
+      "height": 40
+
+    },
+    grayButton: {
+        "paddingTop": 2.5,
+        "paddingRight": 2.5,
+        "paddingBottom": 2.5,
+        "paddingLeft": 2.5,
+        "backgroundColor": "#fbfbfb",
+        "borderWidth": 1,
+        "borderColor": "#dae0df",
+        "borderStyle": "solid",
+        "color": "black",
+        "fontFamily": "sfd",
+        "fontSize": 13,
+        "fontWeight": "400",
+        borderRadius: 5,
+        "height": 40
+    }
 });
 
 

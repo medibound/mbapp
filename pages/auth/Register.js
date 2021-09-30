@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, ImageBackground, Animated, Dimensions, Platform, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Modal} from 'react-native';
 import { Button } from 'react-native-elements';
-import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faLock, faMailBulk, faEnvelope, faExclamationCircle, faKey } from '@fortawesome/free-solid-svg-icons';
 import { NavigationContainer } from '@react-navigation/native';
@@ -124,6 +123,7 @@ class Register extends Component {
                         username: username,
                         accounttype: accounttype,
                         email: email,
+                        approved: [],
                     });
                 firebase.auth().currentUser.updateProfile({displayName: username})
                 console.log(result);
@@ -135,7 +135,7 @@ class Register extends Component {
                         firstname: firstname,
                         lastname: lastname,
                         accounttype: accounttype,
-                        email: email
+                        email: email,
                     });
                 firebase.auth().currentUser.updateProfile({displayName: firstname + " " + lastname})
                 console.log(result);
@@ -220,8 +220,7 @@ class Register extends Component {
       <TouchableWithoutFeedback onPress={Platform.OS == 'web' ? null : Keyboard.dismiss} >
       <SafeAreaView style={{backgroundColor: "white", flex: 1}}>
       <ScrollView alwaysBounceHorizontal={true} contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
-      <ImageBackground source={require('../../src/assets/img/hex.jpg')} style={styles.body}>    
-        <LinearGradient colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 1)']} style={styles.linearGradient}>
+        <View colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 1)']} style={styles.linearGradient}>
           <View style={styles.innerbody}>
             <View style={[styles.register, {minHeight: "auto", marginVertical: 20, alignSelf: 'center'}]}>
               <View style={styles.registerTitle}><Text style={{"fontSize" : 20,"fontWeight" : "600", "letterSpacing" : 3, color: "#777777"}}>CREATE AN<Text style={{color: "#777777", fontWeight: "600"}}> ACCOUNT</Text> </Text></View>
@@ -279,18 +278,9 @@ class Register extends Component {
                   color="transparent"/>
             </View>
 
-            <View style={styles.registerimg}>
-              <ImageBackground source={require('../../src/assets/img/hex.jpg')} style={styles.image}>
-                <LinearGradient colors={['rgba(74, 191, 217, 0.7)', 'rgba(114, 212, 192,1)']} style={styles.linearGradient}>
-                  
-                </LinearGradient>
-              </ImageBackground>
-            </View>
-
             <StatusBar style="auto" backgroundColor="rgb(68, 199, 188)" barStyle="dark-content" />
           </View>
-        </LinearGradient>
-      </ImageBackground>
+        </View>
       </ScrollView>
       </SafeAreaView>
       </TouchableWithoutFeedback>
@@ -692,13 +682,7 @@ const webStyles = StyleSheet.create({
   });
 
   var styles = webStyles;
-
-  if (window.width < 801) {
     styles = StyleSheet.flatten([webStyles,mobileStyles]);
-  }
-  else {
-    styles = webStyles;
-  }
 
   export default Register;
   

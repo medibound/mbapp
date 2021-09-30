@@ -25,7 +25,7 @@ var i5p = "";
 var i6p = "";
 
 
-export default class BottomTab extends Component {
+export default class CodeVerify extends Component {
 
 
     constructor(props) {
@@ -79,6 +79,18 @@ export default class BottomTab extends Component {
     
     }
 
+    async queryAcc(category, db, search) {
+        let data = null;
+        while (data == null) {
+            data = await db.collection(category).where('linked',"==",search).get();
+        }
+        var result = parseInt(data.size);
+        console.log(result);
+    
+        return data;
+    
+    }
+
     verifyCode() {
         var code = "";
 
@@ -109,9 +121,22 @@ export default class BottomTab extends Component {
                     docID = res.id;
                 })
 
+                this.queryAcc("devices", db, firebase.auth().currentUser.uid).then((doc) => {
+                    doc.forEach(res => {
+                        docID = res.id;
+
+                        db.collection("devices").doc(docID).update({
+                            code: null,
+                            linked: null,
+                        });
+                    })
+                });
+
+
                 db.collection("devices").doc(docID).update({
                     code: null,
-                    linked: firebase.auth().currentUser.uid
+                    linked: firebase.auth().currentUser.uid,
+                    lastUpdated: firebase.firestore.Timestamp.now(),
                 });
                 this.props.pass(0);
             }
@@ -338,13 +363,21 @@ export default class BottomTab extends Component {
 
             <Animated.View style={[styles.error, {opacity: this.state.fadeError}, {display: this.state.displayError}]} >
                 <FontAwesomeIcon style={styles.errorIcon} icon={ faExclamationCircle } />
-                <Text style={{color: "#d36e6e", fontWeight: "400",padding: 5}}>{"This Code is Invalid. Ensure Your Code is Correct."}</Text>
+                <Text style={{color: "white", fontWeight: "400",padding: 5}}>{"This Code is Invalid. Ensure Your Code is Correct."}</Text>
             </Animated.View>
             
-            <Button titleStyle={{fontWeight: "600", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={styles.codeButtonContainer} buttonStyle={styles.codeButton} 
+            <Button titleStyle={{fontWeight: "600", color: "#121212", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={styles.codeButtonContainer} buttonStyle={styles.codeButton} 
                   title="ADD DEVICE"
                   onPress={() => this.verifyCode()}
                   color="transparent"
+                  disabledStyle={{
+                      backgroundColor: "#121212",
+                      borderColor: "#444444",
+                      borderWidth: 1,
+                    }}
+                  disabledTitleStyle={{
+                      color: "#444444",
+                  }}
                   disabled={buttonEnabled}
                   />
 
@@ -377,14 +410,13 @@ var styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 40,
         fontWeight: "700",
-        "backgroundColor": "#f4f8f7",
         "borderColor": "#dae0df",
         "borderWidth": 1,
         "borderStyle": "solid",
         borderRadius: 5,
         width: 55,
         height: 60,
-        color: "rgb(68, 199, 188)",
+        color: "#00ff79",
     },
     codeInputFocus: {
         justifyContent: "center",
@@ -393,25 +425,24 @@ var styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 40,
         fontWeight: "700",
-        "backgroundColor": "rgb(240, 255, 254)",
-        "borderColor": "rgb(68, 199, 188)",
+        "borderColor": "#00ff79",
         "borderWidth": 1,
         "borderStyle": "solid",
         borderRadius: 5,
         width: 55,
         height: 60,
-        color: "rgb(68, 199, 188)",
+        color: "#00ff79",
     },
     codeButton: {
         "paddingTop": 2.5,
         "paddingRight": 2.5,
         "paddingBottom": 2.5,
         "paddingLeft": 2.5,
-        "backgroundColor": "rgb(68, 199, 188)",
+        "backgroundColor": "#00ff79",
         "borderWidth": 0,
         "borderColor": "black",
         "borderStyle": "solid",
-        "color": "white",
+        "color": "#121212",
         "fontFamily": "sfd",
         "fontSize": 13,
         "fontWeight": "400",
@@ -428,28 +459,28 @@ var styles = StyleSheet.create({
         display: "none",
         "justifyContent" : "center",
         "paddingLeft": 35,
-        "backgroundColor": "#ffe0e0",
+        "backgroundColor": "#d36e6e",
         "textAlign": "left",
         "lineHeight": 25,
         "borderWidth": 0,
         "borderColor": "black",
         "borderStyle": "solid",
-        borderRadius: 5,
         marginTop: 10,
+        borderRadius: 5,
         "width": "100%",
         "height": "auto",
-        "color": "#d36e6e",
+        "color": "white",
         "overflow": "hidden",
         "fontFamily": "sfd-light",
         "fontWeight": "400"
-    },
+      },
   
-    errorIcon: {
+      errorIcon: {
         "width": 13,
         "zIndex": 2,
         "position": "absolute",
-        "top" : 7,
+        "top" : 6,
         "left" : 10,
-        "color": "#d36e6e"
-    },
+        "color": "white"
+      },
 });
