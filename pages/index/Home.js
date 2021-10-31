@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import { Text, View, Button, StatusBar, StyleSheet, Platform } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { Objects } from '../../components';
+const Colors = Objects.Vars.Colors;
 
 
 class Pathways extends Component {
@@ -10,7 +12,7 @@ class Pathways extends Component {
             <View style={{height: "100%", width: "100%", backgroundColor: "white", paddingBottom: 5}}>
                 <SafeAreaView style={webStyles.body}>
                     <Text>Home Screen</Text>
-                    <StatusBar style="auto" backgroundColor="#00d6a1" barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
+                    <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
                 </SafeAreaView>
             </View>
         )

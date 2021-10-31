@@ -8,6 +8,9 @@ import { Host, Portal } from 'react-native-portalize';
 
 import {Objects} from '../../components/index';
 
+const Colors = Objects.Vars.Colors;
+
+
 const Screen = {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
@@ -72,7 +75,7 @@ class Partners extends Component {
                 <SafeAreaView style={webStyles.body}>
                     <View style={{padding: 10}}>
                     
-                        <Icon style={webStyles.searchIcon} name={"search"} size={20} color={"#121212"}></Icon>
+                        <Icon style={webStyles.searchIcon} name={"search"} size={20} color={Colors.backgroundColor}></Icon>
                         <TextInput 
                             style={this.state.hasFocus ? webStyles.searchInputFocused : webStyles.searchInput}
                             onChangeText={(search) => {this.changeText(search)}}
@@ -85,7 +88,7 @@ class Partners extends Component {
                     <Objects.Server.PartnerList pass={this.onOpenDeviceOptionsHandler} search={this.state.search}></Objects.Server.PartnerList>
                     
 
-                    <StatusBar style="auto" backgroundColor="#00d6a1" barStyle="dark-content" />
+                    <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle="dark-content" />
                 
                 </SafeAreaView>
             </KeyboardAvoidingView>
@@ -101,7 +104,7 @@ class Partners extends Component {
 
 var webStyles = StyleSheet.create({
     body: {
-        backgroundColor: "#121212",
+        backgroundColor: Colors.backgroundColor,
         height: "100%",
         width: "100%",
         overflow: "scroll",
@@ -122,7 +125,7 @@ var webStyles = StyleSheet.create({
         "paddingRight": 2.5,
         "paddingBottom": 2.5,
         "paddingLeft": 40,
-        "backgroundColor": "#222222",
+        "backgroundColor": Colors.backgroundLightColor,
         borderRadius: 10,
         color: "#888888",
         "width": "100%",
@@ -142,7 +145,7 @@ var webStyles = StyleSheet.create({
         "paddingRight": 2.5,
         "paddingBottom": 2.5,
         "paddingLeft": 40,
-        "backgroundColor": "#121212",
+        "backgroundColor": Colors.backgroundColor,
         borderRadius: 10,
         borderColor: "#888888",
         borderWidth: 1,

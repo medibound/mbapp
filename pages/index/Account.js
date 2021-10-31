@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Text, View, StatusBar, StyleSheet, TextInput, Platform, Image } from 'react-native'
+import { Text, View, Appearance, StatusBar, StyleSheet, TextInput, Platform, Image } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,12 +10,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useScrollToTop } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 
+import { Objects } from '../../components';
+var Colors = Objects.Vars.Colors;
 
 const SettingOption = ({label, icon, color, onPress}) => {
     label = label;
     var display = 0;
     if (color == null) {
-        color = "#ddd"
+        color = Colors.lighterText
         display = 1;
     }
     return (
@@ -23,7 +25,7 @@ const SettingOption = ({label, icon, color, onPress}) => {
         <View style={{flexDirection: "column", justifyContent: "center"}}>
             
             <Button onPress={onPress} titleStyle={{color: color,flexDirection: "row", marginLeft: 10, marginBottom: 2, fontSize: 17, fontWeight: "normal", width: "100%", textAlign: "left"}} buttonStyle={webStyles.settingsButton} icon={<Icon name={icon} size={25} color={color}/>} title={label}/> 
-            <Icon style={{ position: "absolute", top: 11, right: 25, opacity: display}} name="chevron-forward-outline" size={25} color="#ddd"/>
+            <Icon style={{ position: "absolute", top: 11, right: 25, opacity: display}} name="chevron-forward-outline" size={25} color={Colors.lighterText}/>
         </View>
         </>
     );
@@ -44,6 +46,7 @@ class Account extends Component {
               loaded: true,
             })
           });
+          
     }
 
 
@@ -57,11 +60,11 @@ class Account extends Component {
     AccountTag = () => {
         if (this.state.accountType == 0) {
             return(
-                <Text style={{padding: 1, color: "#00d6a1", backgroundColor: "#004030", textAlign: "center", marginTop: 4, borderRadius: 5, fontSize: 12, width: 70, fontWeight: "bold"}}>PERSONAL</Text>
+                <Text style={{padding: 1, color: Colors.primaryColor, backgroundColor: Colors.secondaryColor, textAlign: "center", marginTop: 4, borderRadius: 5, fontSize: 12, width: 70, fontWeight: "bold"}}>PERSONAL</Text>
             );
         }
         return(
-            <Text style={{padding: 1, color: "#00d6a1", backgroundColor: "#004030", textAlign: "center", marginTop: 4, borderRadius: 5, fontSize: 12, width: 70, fontWeight: "bold"}}>PARTNER</Text>
+            <Text style={{padding: 1, color: Colors.primaryColor, backgroundColor: Colors.secondaryColor, textAlign: "center", marginTop: 4, borderRadius: 5, fontSize: 12, width: 70, fontWeight: "bold"}}>PARTNER</Text>
         );
     }
 
@@ -91,17 +94,17 @@ class Account extends Component {
         }
         if (this.state.loaded == true) {
             return(
-                <View style={{height: "100%", width: "100%", backgroundColor: "#121212"}}>
+                <View style={{height: "100%", width: "100%", backgroundColor: Colors.backgroundColor}}>
                     <ScrollView shouldRasterizeIOS={false} alwaysBounceVertical={false} style={webStyles.body}>
                         <View style={{backgroundColor: "#f5f5f5", }}>
-                            <SafeAreaView  style={{padding: 0, backgroundColor: "#121212"}} >
+                            <SafeAreaView  style={{padding: 0, backgroundColor: Colors.backgroundColor}} >
                                 <View style={{padding: 10}}>
-                                    <View style={{padding: 10, paddingHorizontal: 15, flexDirection: "row", borderWidth: 1, borderColor: "#222222", borderRadius: 10, backgroundColor: "#222222"}}>
+                                    <View style={{padding: 10, paddingHorizontal: 15, flexDirection: "row", borderWidth: 1, borderColor: Colors.backgroundLightColor, borderRadius: 10, backgroundColor: Colors.backgroundLightColor}}>
                                         <Image
-                                            style={{width: 50, height: 50,  backgroundColor: "#004030", borderRadius: 5}}
+                                            style={{width: 50, height: 50,  backgroundColor: Colors.secondaryColor, borderRadius: 5}}
                                         />
                                         <View style={{flexDirection: "column", marginLeft: 10,}}>
-                                            <Text style={{ color: "#ddd", fontSize: 18, fontWeight: "700"}}>{displayName}</Text>
+                                            <Text style={{ color: Colors.lighterText, fontSize: 18, fontWeight: "700"}}>{displayName}</Text>
                                             <this.AccountTag/>
                                         </View>
                                     </View>
@@ -115,10 +118,10 @@ class Account extends Component {
                                     <SettingOption label="About" icon="information-circle"/>
                                 </View>
                                 <View style={[webStyles.card, {marginTop: 20}]}>
-                                    <SettingOption onPress={() => this.signOut()} label="Log Out" color="#d36e6e" icon="log-out"/>
+                                    <SettingOption onPress={() => this.signOut()} label="Log Out" color={Colors.errColor} icon="log-out"/>
                                 </View>
                                 <Text style={{color: "#777777", alignSelf: "center"}}>Version v{DeviceInfo.getVersion()}</Text>
-                                <StatusBar style="auto" backgroundColor="#00d6a1" barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
+                                <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
                             </SafeAreaView>
                         </View>
                     </ScrollView>
@@ -136,7 +139,7 @@ class Account extends Component {
 
 var webStyles = StyleSheet.create({
     body: {
-        backgroundColor: "#121212",
+        backgroundColor: Colors.backgroundColor,
         height: "100%",
         width: "100%",
         overflow: "scroll",
@@ -169,10 +172,10 @@ var webStyles = StyleSheet.create({
     },
     card: {
         width: "100%",
-        backgroundColor: "#121212",
+        backgroundColor: Colors.backgroundColor,
         marginTop: 5,
         borderBottomWidth: 1,
-        borderBottomColor: "#222222",
+        borderBottomColor: Colors.backgroundLightColor,
         
     },
     settingsButton: {
@@ -181,7 +184,7 @@ var webStyles = StyleSheet.create({
         width: "100%",
         borderWidth: 0,
         borderTopWidth: 1,
-        borderTopColor: "#222222",
+        borderTopColor: Colors.backgroundLightColor,
         height: 50,
         padding: 0,
         paddingLeft: 30,
@@ -190,7 +193,7 @@ var webStyles = StyleSheet.create({
         overflow: "visible",
     },
     signOutLayout: {
-        "backgroundColor": "#121212",
+        "backgroundColor": Colors.backgroundColor,
         fontWeight: "700",
         width: "100%",
         borderWidth: 0,

@@ -6,6 +6,7 @@ import DeviceList from './server/DeviceList'
 import PartnerList from './server/PartnerList';
 import DeviceOptions from './server/DeviceOptions';
 import UsersList from './server/UsersList';
+import Colors from './vars/Colors';
 
 export const Objects = { 
     Navigation: {
@@ -18,5 +19,8 @@ export const Objects = {
         PartnerList,
         DeviceOptions,
         UsersList,
+    },
+    Vars: {
+        Colors,
     }
 }

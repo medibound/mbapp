@@ -7,6 +7,7 @@ import BottomSheet from 'react-native-bottomsheet-reanimated';
 import { Host, Portal } from 'react-native-portalize';
 
 import {Objects} from '../../components/index';
+const Colors = Objects.Vars.Colors;
 
 const screen = Dimensions.get("screen");
 
@@ -63,7 +64,7 @@ class Devices extends Component {
         return(
             <View style={{height: "100%", width: "100%", backgroundColor: "white"}}>
                 <SafeAreaView style={webStyles.body}>
-                    <View style={{padding: 15, flexDirection: "row", width: screen.width, borderBottomWidth: 1, borderBottomColor: "#222222"}}>
+                    <View style={{padding: 15, flexDirection: "row", width: screen.width, borderBottomWidth: 1, borderBottomColor: Colors.backgroundLightColor}}>
                         <Image
                             style={{width: 40, height: 40,  backgroundColor: "#004030", borderRadius: 5}}
                         />
@@ -73,7 +74,7 @@ class Devices extends Component {
                     <Objects.Server.DeviceList pass={this.onOpenDeviceOptionsHandler}></Objects.Server.DeviceList>
                     
 
-                    <StatusBar style="auto" backgroundColor="#00d6a1" barStyle="dark-content" />
+                    <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle="dark-content" />
                 
                 </SafeAreaView>
             </View>
@@ -85,7 +86,7 @@ class Devices extends Component {
 
 var webStyles = StyleSheet.create({
     body: {
-        backgroundColor: "#121212",
+        backgroundColor: Colors.backgroundColor,
         height: "100%",
         width: "100%",
         overflow: "scroll",
@@ -104,10 +105,10 @@ var webStyles = StyleSheet.create({
         height: 39,
         width: screen.width - 76,
         marginLeft: 10,
-        backgroundColor: "#222222",
+        backgroundColor: Colors.backgroundLightColor,
         borderRadius: 7.5,
         borderWidth: 2,
-        borderColor: "#222222"
+        borderColor: Colors.backgroundLightColor
     },
     greenButton: {
         "paddingTop": 2.5,

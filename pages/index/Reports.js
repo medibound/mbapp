@@ -13,6 +13,13 @@ import { Buffer } from 'buffer';
 import { read } from 'react-native-ble-manager';
 import { set } from 'react-native-reanimated';
 
+import { Objects } from '../../components';
+import { ImageBackground } from 'react-native';
+import ThemedListItem from 'react-native-elements/dist/list/ListItem';
+import { ScrollView } from 'react-native';
+const Colors = Objects.Vars.Colors;
+
+
 const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
 
@@ -36,6 +43,7 @@ class Reports extends Component {
             hasFocus: false,
             search: false,
             addDataHeight: 220,
+            postArray: []
         }
 
         
@@ -93,14 +101,14 @@ class Reports extends Component {
                 <>
                     <View style={{flexDirection: "row", marginBottom: 25}}>
                         <View style={webStyles.connectContainer}>
-                                <ActivityIndicator size="large" color="#ddd" />
+                                <ActivityIndicator size="large" color={Colors.lighterText} />
                         </View>
                         <View style={webStyles.connectText}>
-                            <Text style={{color: "#ddd", fontSize: 12, textAlign: "center", fontWeight: "bold"}}>HOVER OVER A MEDIBOUND BEACON</Text>
-                            <Text style={{color: "#ddd", textAlign: "center", fontSize: 12}}>TO ADD MEDICAL DATA TO YOUR FEED</Text>
+                            <Text style={{color: Colors.lighterText, fontSize: 12, textAlign: "center", fontWeight: "bold"}}>HOVER OVER A MEDIBOUND BEACON</Text>
+                            <Text style={{color: Colors.lighterText, textAlign: "center", fontSize: 12}}>TO ADD MEDICAL DATA TO YOUR FEED</Text>
                         </View>
                     </View>   
-                    <Button onPress={() => {this.RBSheet.close();} } title="Cancel" buttonStyle={webStyles.connectButton} titleStyle={{color: "#d36e6e"}} ></Button>
+                    <Button onPress={() => {this.state.postArray.push(1);this.RBSheet.close();} } title="Cancel" buttonStyle={webStyles.connectButton} titleStyle={{color: Colors.errColor}} ></Button>
  
                 </>
             )
@@ -109,16 +117,35 @@ class Reports extends Component {
             <>
                 <View style={{flexDirection: "row", marginBottom: 25}}>
                         <View style={webStyles.connectedContainer}>
-                            <Ionicons name="checkmark-outline" size={40} color="#00d6a1"></Ionicons>
+                            <Ionicons name="checkmark-outline" size={40} color={Colors.primaryColor}></Ionicons>
                         </View>
                         <View style={webStyles.connectText}>
-                            <Text style={{color: "#ddd", fontSize: 12, textAlign: "center", fontWeight: "bold"}}>HOVER OVER A MEDIBOUND BEACON</Text>
-                            <Text style={{color: "#ddd", textAlign: "center", fontSize: 12}}>TO ADD MEDICAL DATA TO YOUR FEED</Text>
+                            <Text style={{color: Colors.lighterText, fontSize: 12, textAlign: "center", fontWeight: "bold"}}>HOVER OVER A MEDIBOUND BEACON</Text>
+                            <Text style={{color: Colors.lighterText, textAlign: "center", fontSize: 12}}>TO ADD MEDICAL DATA TO YOUR FEED</Text>
                         </View>
                 </View>
-                <Button containerStyle={{marginBottom: 10}}  title="Approve Submission" buttonStyle={webStyles.connectedButton} titleStyle={{color: "#00d6a1"}} ></Button>  
-                <Button onPress={() => {this.RBSheet.close();} } title="View More Information" buttonStyle={webStyles.connectButton} titleStyle={{color: "#ddd"}} ></Button>
+                <Button onPress={() => {this.state.postArray.push(1);this.RBSheet.close(); } }  containerStyle={{marginBottom: 10}}  title="Approve Submission" buttonStyle={webStyles.connectedButton} titleStyle={{color: Colors.primaryColor}} ></Button>  
+                <Button onPress={() => {this.RBSheet.close();} } title="View More Information" buttonStyle={webStyles.connectButton} titleStyle={{color: Colors.lighterText}} ></Button>
             </>
+        )
+    }
+
+    Post = () => {
+        return (
+            <View style={{width: "100%",marginBottom: 15, }}>
+                    <ImageBackground blurRadius={1} resizeMode="cover" imageStyle={{opacity:0.3}} source={{ uri: "https://www.wealthmanagement.com/sites/wealthmanagement.com/files/styles/article_featured_standard/public/medical-office-examining-room_1.jpg?itok=YGaB5mT1" }} style={webStyles.dataBox}>
+                        <View style={{padding: 20}}>
+                            <Text style={{fontSize: 20, fontWeight: "700", color: "white", marginBottom: 20, width: "80%"}}>Medibound Report</Text>
+                            <View style={{backgroundColor: "#222222", borderBottomLeftRadius: 5, borderTopLeftRadius: 5,  marginBottom: 20, padding: 5, paddingRight: 10, width: "auto", position: "absolute", right: 0, top: 13, flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                                <Image source={{uri: "https://avatars.githubusercontent.com/u/83532819?s=200&v=4"}}
+                                    style={{width: 30, height: 30, marginRight: 10, backgroundColor: Colors.secondaryColor, borderRadius: 20}}
+                                />
+                                <Text style={{color: "white"}}>Medibound</Text>
+                            </View>
+                            <Button onPress={() => {this.RBSheet.open();this.readNdef(); NavigationBar.setColor('#121212')}} title="View Information" buttonStyle={webStyles.dataButton} titleStyle={{color: "white"}} ></Button>
+                        </View>
+                    </ImageBackground>
+                </View>
         )
     }
 
@@ -129,17 +156,26 @@ class Reports extends Component {
 
         return(
             <>
-            <View style={{padding: 15, flexDirection: "row", width: screen.width, borderBottomWidth: 1, borderBottomColor: "#222222"}}>
-                <Image
-                    style={{width: 40, height: 40,  backgroundColor: "#004030", borderRadius: 5}}
+            <View style={{padding: 15, flexDirection: "row", width: screen.width, borderBottomWidth: 1, borderBottomColor: Colors.backgroundLightColor}}>
+                <Image source={{uri: "https://avatars.githubusercontent.com/u/66661429?v=4"}} resizeMode="cover"
+                    style={{width: 40, height: 40,  backgroundColor: Colors.secondaryColor, borderRadius: 5}}
                 />
-                <Button onPress={() => {this.RBSheet.open();this.readNdef(); NavigationBar.setColor('#121212')}} title="Add Medical Records" buttonStyle={webStyles.addDataButton} titleStyle={{color: "#ddd"}} icon={<Ionicons name={"cloud-upload"} size={20} style={{marginRight: 10}} color="#ddd"/>}></Button>
+                <Button onPress={() => {this.RBSheet.open();this.readNdef(); NavigationBar.setColor('#121212')}} title="Add Medical Records" buttonStyle={webStyles.addDataButton} titleStyle={{color: Colors.lighterText}} icon={<Ionicons name={"cloud-upload"} size={20} style={{marginRight: 10}} color={Colors.lighterText}/>}></Button>
+            </View>
+            <View  style={{padding: 15, paddingBottom: 0, flexDirection: "column", width: screen.width, height: window.height-160, borderBottomWidth: 1, borderBottomColor: Colors.backgroundLightColor, marginBottom: 10}}>
+                <ScrollView>
+                    {this.state.postArray.map(d=> {
+                        return(
+                            <this.Post/>
+                        );
+                    })}  
+                </ScrollView>              
             </View>
             <TouchableWithoutFeedback onPress={Platform.OS == 'web' ? null : Keyboard.dismiss} >
-                <View style={{height: "100%", width: "100%", backgroundColor: "#121212", }}>
+                <View style={{height: "100%", width: "100%", backgroundColor: Colors.backgroundColor, }}>
                     <View style={webStyles.body}>
                         
-                        <StatusBar style="auto" backgroundColor="#00d6a1" barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
+                        <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
                     </View>
                 </View>
             </TouchableWithoutFeedback>
@@ -159,7 +195,7 @@ class Reports extends Component {
                     customStyles={{
                         container: {
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: Colors.backgroundColor,
                             borderTopLeftRadius: 20,
                             borderTopRightRadius: 20,
                             padding: 20
@@ -180,21 +216,35 @@ class Reports extends Component {
 
 var webStyles = StyleSheet.create({
     body: {
-        backgroundColor: "#121212",
+        backgroundColor: Colors.backgroundColor,
         height: "100%",
         width: "100%",
         overflow: "hidden",
         padding: 0,
         zIndex: 10,
     },
+    dataBox: {
+        backgroundColor: "#121212",
+        width: "100%",
+        borderRadius: 10,
+        overflow: "hidden",
+    },
+    dataButton: {
+        height: 40,
+        width: "100%",
+        backgroundColor: "rgba(255,255,255,0.15)",
+        borderRadius: 7.5,
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+    },
     addDataButton: {
         height: 40,
         width: screen.width - 76,
         marginLeft: 10,
-        backgroundColor: "#222222",
+        backgroundColor: Colors.backgroundLightColor,
         borderRadius: 7.5,
         borderWidth: 2,
-        borderColor: "#222222"
+        borderColor: Colors.backgroundLightColor
     },
     searchInput: {
         "marginBottom": 10,
@@ -232,8 +282,8 @@ var webStyles = StyleSheet.create({
       },
       connectContainer: {
           borderWidth: 1,
-          borderColor: "#222222",
-          backgroundColor: "#222222",
+          borderColor: Colors.backgroundLightColor,
+          backgroundColor: Colors.backgroundLightColor,
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 10,
@@ -242,8 +292,8 @@ var webStyles = StyleSheet.create({
       },
       connectedContainer: {
         borderWidth: 1,
-        borderColor: "#004030",
-        backgroundColor: "#004030",
+        borderColor: Colors.secondaryColor,
+        backgroundColor: Colors.secondaryColor,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
@@ -252,13 +302,13 @@ var webStyles = StyleSheet.create({
     },
       connectText: {
         borderWidth: 2,
-        borderColor: "#222222",
+        borderColor: Colors.backgroundLightColor,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
         height: 75,
         marginLeft: 10,
-        color: "#ddd",
+        color: Colors.lighterText,
         padding: 10,
         width: screen.width - 125,
     },
@@ -268,10 +318,10 @@ var webStyles = StyleSheet.create({
         textAlign: "center",
         height: 45,
         width: screen.width - 40,
-        backgroundColor: "#222222",
+        backgroundColor: Colors.backgroundLightColor,
         borderRadius: 7.5,
         borderWidth: 2,
-        borderColor: "#222222",
+        borderColor: Colors.backgroundLightColor,
       },
       connectedButton: {
         alignItems: "center",
@@ -279,10 +329,10 @@ var webStyles = StyleSheet.create({
         textAlign: "center",
         height: 45,
         width: screen.width - 40,
-        backgroundColor: "#222222",
+        backgroundColor: Colors.backgroundLightColor,
         borderRadius: 7.5,
         borderWidth: 2,
-        borderColor: "#222222",
+        borderColor: Colors.backgroundLightColor,
       }
 });
 

@@ -19,6 +19,7 @@ import firebase from 'firebase';
 
 import {Pages} from '../../pages/index';
 import { screensEnabled } from 'react-native-screens';
+import Colors from '../vars/Colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,11 +28,10 @@ const screen = Dimensions.get("screen");
 
 const Tabs = AnimatedTabBarNavigator();
 
-
 export default class BottomTab extends Component {
 
     _isMounted = false;
-
+  
     constructor(props) {
       super(props)
       this.state = {
@@ -69,7 +69,6 @@ export default class BottomTab extends Component {
           }
         }
         });
-      
         
     }
 
@@ -94,41 +93,41 @@ export default class BottomTab extends Component {
               <Tabs.Navigator
                 // default configuration from React Navigation
                 tabBarOptions={{
-                  activeTintColor: "#00d6a1",
-                  inactiveTintColor: "#ddd",
-                  activeBackgroundColor: "#004030",
+                  activeTintColor: Colors.primaryColor,
+                  inactiveTintColor: Colors.lighterText,
+                  activeBackgroundColor: Colors.secondaryColor,
                   tabStyle: {
-                    borderTopColor: "#222222",
+                    borderTopColor: Colors.backgroundLightColor,
                     borderTopWidth: 1,
                   }
                 }}
                 appearance={{
-                  tabBarBackground: "#121212",
+                  tabBarBackground: Colors.backgroundColor,
                   dotCornerRadius: 100,
                 }}
               >
-                <Tabs.Screen name={"Home"} component={Pages.Pathways} 
+                <Tabs.Screen name={"Home"} children={()=><Pages.Pathways {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"cube"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"cube"} size={22} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }} />
-                <Tabs.Screen name="Partners" component={Pages.Partners} 
+                <Tabs.Screen name="Partners" children={()=><Pages.Partners {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"shield-checkmark"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"shield-checkmark"} size={22} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
-                <Tabs.Screen name="Reports" component={Pages.Reports} 
+                <Tabs.Screen name="Reports" children={()=><Pages.Reports {...this.props}/>}  
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"pie-chart"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"pie-chart"} size={22} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
-                <Tabs.Screen name="Account" component={Pages.Account} 
+                <Tabs.Screen name="Account" children={()=><Pages.Account {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"person"} size={22} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"person"} size={22} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
   
@@ -145,41 +144,41 @@ export default class BottomTab extends Component {
               <Tabs.Navigator
                 // default configuration from React Navigation
                 tabBarOptions={{
-                  activeTintColor: "#00d6a1",
-                  inactiveTintColor: "#ddd",
-                  activeBackgroundColor: "#004030",
+                  activeTintColor: Colors.primaryColor,
+                  inactiveTintColor: Colors.lighterText,
+                  activeBackgroundColor: Colors.secondaryColor,
                   tabStyle: {
-                    borderTopColor: "#222222",
+                    borderTopColor: Colors.backgroundLightColor,
                     borderTopWidth: 1,
                   }
                 }}
                 appearance={{
-                  tabBarBackground: "#121212",
+                  tabBarBackground: Colors.backgroundColor,
                   dotCornerRadius: 100,
                 }}
               >
-                <Tabs.Screen name={"Home"} component={Pages.Pathways} 
+                <Tabs.Screen name={"Home"} children={()=><Pages.Pathways {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"cube"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"cube"} size={20} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }} />
-                <Tabs.Screen name="Devices" component={Pages.Device} 
+                <Tabs.Screen name="Devices" children={()=><Pages.Device {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"layers"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"layers"} size={20} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
-                <Tabs.Screen name="Users" component={Pages.Users} 
+                <Tabs.Screen name="Users" children={()=><Pages.Users {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"people"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"people"} size={20} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
-                <Tabs.Screen name="Account" component={Pages.Account} 
+                <Tabs.Screen name="Account" children={()=><Pages.Account {...this.props}/>} 
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Ionicons name={"person"} size={20} color={focused ? "#00d6a1" :  "#444444"}/>
+                    <Ionicons name={"person"} size={20} color={focused ? Colors.primaryColor :  Colors.backgroundLighterColor}/>
                   )
                 }}/>
   

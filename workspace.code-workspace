@@ -61,7 +61,15 @@
 		},
 		{
 			"path": "D:\\Downloads\\HartyBot-discord-bot\\HartyBot-discord-bot"
+		},
+		{
+			"path": "..\\..\\..\\Documents\\medibound-library"
+		},
+		{
+			"path": "..\\..\\tensorflow web"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "medibound-library"
+	}
 }

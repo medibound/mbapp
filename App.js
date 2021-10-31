@@ -14,12 +14,18 @@ import BottomSheet from 'react-native-bottomsheet-reanimated';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
 import { Host, Portal } from 'react-native-portalize';
+import { ColorSchemeProvider } from 'react-native-dynamic'
+
 
 import firebase from 'firebase';
 import {injectWebCss} from './pages/libraries/css'
 
 import {Pages} from './pages/index';
+
 import {Objects} from './components/index'
+import { render } from 'react-dom';
+
+const Colors = Objects.Vars.Colors;
 
 injectWebCss();
 
@@ -100,7 +106,7 @@ console.log(window.height-screen.height)
 
 var showTopBar = true;
 
-export class App extends Component {
+export class AppContainer extends Component {
 
   _isMounted = false;
 
@@ -165,11 +171,11 @@ export class App extends Component {
     }
     if (!loggedIn) {
       return (
-        <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: "#121212"}}>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: Colors.backgroundColor}}>
           <NavigationContainer >
             <Stack.Navigator initialRouteName="Login">
               <Stack.Screen name="Login" component={Pages.Auth.Login} options={{ headerShown: false, headerTitleStyle:{color: "white"}, headerTransparent: true, headerBackTitleStyle: {color: "black"}} } navigation={this.props.navigation}/>
-              <Stack.Screen name="Register" component={Pages.Auth.Register} options={{ headerShown: false,  headerTitleStyle:{color: "white"}, headerTransparent: true,...MyTransition }} />
+              <Stack.Screen name="Register" component={Pages.Auth.Register} options={{ headerShown: false,  headerTitleStyle:{color: "white"}, headerTransparent: true,...MyTransition }}/>
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaProvider>  
@@ -178,9 +184,9 @@ export class App extends Component {
 
 
     return (
-      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: "#121212", position: "absolute", height: screen.height-(screen.height-window.height+StatusBar.currentHeight), width: screen.width, }}> 
+      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: Colors.backgroundColor, position: "absolute", height: screen.height-(screen.height-window.height+StatusBar.currentHeight), width: screen.width, }}> 
           <Host>
-          <Objects.Navigation.BottomTab/>
+          <Objects.Navigation.BottomTab mode={this.props.mode}/>
           </Host>
       </SafeAreaProvider>
       
@@ -188,5 +194,18 @@ export class App extends Component {
   }
 }
 
-export default App
+export class App extends Component {
+  render() {
+    return(
+      <>
+      	<ColorSchemeProvider mode="dark">
+          <AppContainer mode="dark"/>
+        </ColorSchemeProvider>
+      </>
+    )
+  }
+  
+}
+
+export default App;
 

@@ -8,6 +8,8 @@ import { Button } from 'react-native-elements';
 
 
 import firebase from 'firebase';
+import Colors from '../vars/Colors';
+
 
 
 
@@ -298,19 +300,19 @@ export default class PartnerList extends Component {
                         />
                 }>
                     <View style={{marginTop: 10, padding: 10}} >
-                        <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: "#222222", borderBottomWidth: 1, marginBottom: 10}}>SEARCH RESULTS FOR: "{this.props.search}"</Text>
+                        <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>SEARCH RESULTS FOR: "{this.props.search}"</Text>
                         {
                             this.state.deviceArray.map(d => {
                                 return(<>
-                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": "#121212", borderColor: "#222222", borderWidth: 1.5,}} >
+                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
                                         <View style={styles.device}>
                                         <View style={{flexDirection:"row",color: "#777777", alignItems: "center"}}>
                                                 <Image
-                                                    style={{width: 45, height: 45,  backgroundColor: "#004030", borderRadius: 30}}
+                                                    style={{width: 45, height: 45,  backgroundColor: Colors.secondaryColor, borderRadius: 30}}
                                                 />
-                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: "#ddd", fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={"#00d6a1"} style={{marginLeft: 5}}/></View>
+                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: Colors.lighterText, fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
                                         </View>
-                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: "#ddd"} : {color: "#ddd"}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color="#ddd"/> : null}></Button>
+                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lighterText}/> : null}></Button>
                 
                                     </Pressable></View>
                 
@@ -332,19 +334,19 @@ export default class PartnerList extends Component {
                         />
                 }>
                     <View style={{marginTop: 10, padding: 10}} >
-                        <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: "#222222", borderBottomWidth: 1, marginBottom: 10}}>APPROVED PARTNERS ({this.state.approved.length})</Text>
+                        <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>APPROVED PARTNERS ({this.state.approved.length})</Text>
                         {
                             this.state.approved.map(d => {
                                 return(<>
-                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": "#121212", borderColor: "#222222", borderWidth: 1.5,}} >
+                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
                                         <View style={styles.device}>
                                             <View style={{flexDirection:"row",color: "#777777", alignItems: "center"}}>
                                                 <Image
-                                                    style={{width: 45, height: 45,  backgroundColor: "#004030", borderRadius: 30}}
+                                                    style={{width: 45, height: 45,  backgroundColor: Colors.secondaryColor, borderRadius: 30}}
                                                 />
-                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: "#ddd", fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={"#00d6a1"} style={{marginLeft: 5}}/></View>
+                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: Colors.lighterText, fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
                                         </View>
-                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: "#ddd"} : {color: "#ddd"}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color="#ddd"/> : null}></Button>
+                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lighterText}/> : null}></Button>
                 
                                     </Pressable></View>
                 
@@ -366,7 +368,7 @@ export default class PartnerList extends Component {
                         />
                 }>
                 <View style={{marginTop: 10, padding: 10}} >
-                    <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: "#222222", borderBottomWidth: 1, marginBottom: 10}}>NO RESULTS FOR: "{this.props.search}"</Text>
+                    <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>NO RESULTS FOR: "{this.props.search}"</Text>
                     </View>
                     <View style={{width: "100%", height: "68%", justifyContent: "center", alignItems: "center", }}>
                         <Ionicons name="search-circle" size={70} color="#777777" style={{marginBottom: 10}}/>
@@ -418,23 +420,23 @@ var styles = StyleSheet.create({
         overflow: "visible",
     },
     approveButton: {
-        backgroundColor: "#121212",
-        color: "#222222",
+        backgroundColor: Colors.backgroundColor,
+        color: Colors.backgroundLightColor,
         width: 100,
         borderRadius: 10,
         zIndex: 100,
         height: 40,
-        borderColor: "#222222",
+        borderColor: Colors.backgroundLightColor,
         borderWidth: 2,
     },
     disapproveButton: {
-        backgroundColor: "#222222",
-        color: "#00d6a1",
+        backgroundColor: Colors.backgroundLightColor,
+        color: Colors.primaryColor,
         width: 115,
         height: 40,
         borderRadius: 10,
         zIndex: 100,
-        borderColor: "#222222",
+        borderColor: Colors.backgroundLightColor,
         borderWidth: 2,
     }
 });
