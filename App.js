@@ -1,8 +1,7 @@
 import React, {Component, useEffect, usetst} from 'react';
-import { StyleSheet, KeyboardAvoidingView, StatusBar, Text, TextInput, View, ImageBackground, Dimensions, Button, Easing, SafeAreaView, Keyboard, Animated} from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, StatusBar, Appearance, Text, TextInput, View, ImageBackground, Dimensions, Button, Easing, SafeAreaView, Keyboard, Animated} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native'
 import NavigationBar from 'react-native-navbar-color'
-import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
 import { createStackNavigator, TransitionSpecs, HeaderStyleInterpolators } from '@react-navigation/stack';
@@ -25,7 +24,7 @@ import {Pages} from './pages/index';
 import {Objects} from './components/index'
 import { render } from 'react-dom';
 
-const Colors = Objects.Vars.Colors;
+var Colors;
 
 injectWebCss();
 
@@ -114,13 +113,18 @@ export class AppContainer extends Component {
     super(props)
     this.state = {
       loaded: false,
+      colors: Appearance.getColorScheme(),
+      colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)
     };
   
   }
 
+
+
   componentDidMount = async() => {
 
-
+    Dimensions.addEventListener("change", this.onChange);
+    Appearance.addChangeListener(this.onAppThemeChanged);
     firebase.firestore().settings({ experimentalForceLongPolling: true });
 
     this._isMounted = true;
@@ -147,9 +151,19 @@ export class AppContainer extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+    Dimensions.removeEventListener("change", this.onChange);
+    Appearance.addChangeListener(this.onAppThemeChanged);
   }
 
+  onAppThemeChanged = (theme) => {
+    const currentTheme = Appearance.getColorScheme();
+    this.setState({colors: currentTheme});
+    this.setState({colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)})
+  };
+
   render() {
+
+    Colors = Objects.Vars.useColor(this.state.colors === "dark" ? true : false);
 
     const {loggedIn, loaded} = this.state;
 
@@ -171,7 +185,7 @@ export class AppContainer extends Component {
     }
     if (!loggedIn) {
       return (
-        <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: Colors.backgroundColor}}>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: Colors.backgroundLightestColor}}>
           <NavigationContainer >
             <Stack.Navigator initialRouteName="Login">
               <Stack.Screen name="Login" component={Pages.Auth.Login} options={{ headerShown: false, headerTitleStyle:{color: "white"}, headerTransparent: true, headerBackTitleStyle: {color: "black"}} } navigation={this.props.navigation}/>
@@ -185,9 +199,7 @@ export class AppContainer extends Component {
 
     return (
       <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{backgroundColor: Colors.backgroundColor, position: "absolute", height: screen.height-(screen.height-window.height+StatusBar.currentHeight), width: screen.width, }}> 
-          <Host>
           <Objects.Navigation.BottomTab mode={this.props.mode}/>
-          </Host>
       </SafeAreaProvider>
       
     );
@@ -208,4 +220,3 @@ export class App extends Component {
 }
 
 export default App;
-

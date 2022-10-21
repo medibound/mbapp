@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet,StatusBar, Image, Text, TextInput, View, ImageBackground, Animated, Dimensions, TouchableWithoutFeedback, Keyboard, Platform} from 'react-native';
-import { Button } from 'react-native-elements';
+import { StyleSheet,StatusBar, Appearance, Alert, Image, Text, TextInput, View, ImageBackground, Animated, Dimensions, TouchableWithoutFeedback, Keyboard, Platform} from 'react-native';
+import { Button as ElementButton } from 'react-native-elements';
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faLock, faPray, faEnvelope, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +12,12 @@ import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
+import {Objects} from '../../components/index';
 
+const Button = Objects.Server.withPressAnimation(ElementButton);
+
+var webStyles;
+var Colors;
 
 const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
@@ -33,73 +38,92 @@ export class Login extends Component {
         },
         input1: false,
         input2: false,
+        buttonLoading: false,
+        colors: Appearance.getColorScheme(),
+        colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)
     }
 
     this.onSignIn = this.onSignIn.bind(this)
   }
 
   async onSignIn() {
+    this.setState({buttonLoading: true});
+
     const { email, password } = this.state;
-    const result = await axios.post("https://manage.medibound.com/api/checkUserAccount", {email: email}).catch(err => {
-      firebase.auth().signInWithEmailAndPassword(email + "@example.com", password)
-          .then((result) => {
-              console.log(result);
-          })
-          .catch((error) => {
-                console.log(error)
-                this.setState({errorMessage: error.message});
-                Animated.timing(this.state.fadeError, {
-                  toValue: 1,
-                  duration: 1000,
-                  useNativeDriver: true,
-                }).start();
-              
-          })
-    });
-    console.log(result);
-    if (result.data == false)  {
-      this.setState({errorMessage: "Admin Accounts Cannot Login Here"});
-            Animated.timing(this.state.fadeError, {
-              toValue: 1,
-              duration: 1000,
-              useNativeDriver: true,
-            }).start();
+
+    if (email == "" || password == "") {
+      this.presentError("Please Enter the Correct Information");
+      this.setState({buttonLoading: false});
+
     }
-    else if (result.data == true) {
-        await firebase.auth().signInWithEmailAndPassword(email, password).then((result) => {
-          console.log(result);
-        }).catch((error) => {
-          console.log(error)
-          this.setState({errorMessage: error.message});
-          Animated.timing(this.state.fadeError, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }).start();
-        });
-      
+    else {
+      const result = await axios.post("https://manage.medibound.com/api/checkUserAccount", {email: email}).catch(err => {
+        firebase.auth().signInWithEmailAndPassword(email + "@example.com", password)
+            .then((result) => {
+                console.log(result);
+                this.setState({buttonLoading: false});
+            })
+            .catch((error) => {
+                  console.log(error)
+                  this.presentError(error.message);
+                  this.setState({buttonLoading: false});
+                
+            })
+      });
+      console.log(result);
+      if (result.data == false && email != "" && password != "")  {
+        this.presentError("Admin Accounts Cannot Login Here");
+        this.setState({buttonLoading: false});
+
+      }
+      else if (result.data == true) {
+        this.setState({buttonLoading: true});
+          await firebase.auth().signInWithEmailAndPassword(email, password).then((result) => {
+            console.log(result);
+            this.setState({buttonLoading: false});
+          }).catch((error) => {
+            console.log(error)
+            this.setState({buttonLoading: false});
+            
+            this.presentError(error.message);
+          });
+        
+      }
     }
   }
 
-  
-
-  onChange = ({ window, screen }) => {
-    this.setState({ dimensions: { window, screen } });
-    if (window.width < 801) {
-      styles = StyleSheet.flatten([webStyles,mobileStyles]);
+  presentError(message) {
+    this.setState({buttonLoading: false});
+    this.setState({errorMessage: message});
+    if (Platform.OS == 'ios') {
+      Alert.alert("Login Error", message)
     }
     else {
-      styles = webStyles;
+      Animated.timing(this.state.fadeError, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
     }
-  };
+    
+  }
+
 
   componentDidMount() {
     Dimensions.addEventListener("change", this.onChange);
+    Appearance.addChangeListener(this.onAppThemeChanged);
   }
 
   componentWillUnmount() {
     Dimensions.removeEventListener("change", this.onChange);
+    Appearance.addChangeListener(this.onAppThemeChanged);
+
   }
+  onAppThemeChanged = (theme) => {
+    const currentTheme = Appearance.getColorScheme();
+    this.setState({colors: currentTheme});
+    this.setState({colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)})
+  };
 
   setFocus1 (input1) {
     this.setState({input1});
@@ -110,25 +134,30 @@ export class Login extends Component {
   }
 
   render() {
+
+
+    Colors = Objects.Vars.useColor(this.state.colors === "dark" ? true : false);
+    webStyles = setStyle(Colors);
+
     return (
     <TouchableWithoutFeedback onPress={Platform.OS == 'web' ? null : Keyboard.dismiss} >
-    <SafeAreaView style={{backgroundColor: "#121212", flex: 1,borderWidth: 1, borderColor: "#121212"}} >  
+    <SafeAreaView style={{backgroundColor: Colors.backgroundLightestColor, flex: 1}} >  
     <ScrollView alwaysBounceHorizontal={true} contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.innerbody}>
+        <View style={webStyles.innerbody}>
 
 
-          <View style={[styles.login, {minHeight: "auto", marginVertical: 20, alignSelf: 'center'}]}>
-            <View style={{flexDirection: 'row', width: "95%", justifyContent: 'center', alignItems: 'center', alignContent: 'center'}}>
-              <Image source={require('../../assets/logo2.png')} style={{width: 30, height: 30, marginRight: 10, marginBottom: 10,}}></Image>
-              <View style={styles.loginTitle}><Ionicons name="chevron-forward-outline" color="white" size={20}></Ionicons><Text style={{marginLeft: 10,"fontSize" : 18,"fontWeight" : '600', "letterSpacing" : 3,color: "white"}}>SIGN IN TO PATHWAYS</Text></View>
+          <View style={[webStyles.login, {minHeight: "auto", marginVertical: 20, alignSelf: 'center'}]}>
+            <View style={{flexDirection: 'column', width: "100%", justifyContent: 'flex-start', alignItems:'flex-start', alignContent: 'center'}}>
+              <View ><Text style={{"fontSize" : 35,"fontWeight" : '900', "letterSpacing" : 0,color: Colors.barColor}}>Welcome Back,</Text></View>
+              <View style={webStyles.loginTitle}><Text style={{"fontSize" : 20,"fontWeight" : '700', "letterSpacing" : 0,color: Colors.lighterText}}>Log in to Your Account</Text></View>
             </View>
 
-            <Text style={{color: this.state.input1 ? "#00ff79" : "#b0b4b3", alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Email</Text>
-            <Ionicons name={"mail"} style={this.state.input1 ? styles.loginIconFocus : styles.loginIcon} size={15} />
+            <Text style={{color: this.state.input1 ? Colors.barColor : Colors.lighterText, alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Email</Text>
+            <Ionicons name={"mail"} style={this.state.input1 ? webStyles.loginIconFocus : webStyles.loginIcon} size={15} />
             <TextInput
-              style={[this.state.input1 ? styles.loginInputFocus : styles.loginInput, {color: "white"}]}
+              style={[this.state.input1 ? webStyles.loginInputFocus : webStyles.loginInput]}
               placeholder="Email"
-              placeholderTextColor={this.state.input1 ? "#00ff79" : "#b0b4b3"}
+              placeholderTextColor={this.state.input1 ? Colors.barColor : Colors.lighterText}
               keyboardType="email-address"
               onSubmitEditing={() => this.onSignIn()}
               onFocus={this.setFocus1.bind(this, true)}
@@ -136,13 +165,13 @@ export class Login extends Component {
               autoCompleteType="email"
               onChangeText={(email) => this.setState({email: email})}
             />
-            <Text style={{color: this.state.input2 ? "#00ff79" : "#b0b4b3", alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Password</Text>
-            <Ionicons name={"lock-closed"} style={this.state.input2 ? styles.loginIconFocus : styles.loginIcon} size={15} />
+            <Text style={{color: this.state.input2 ? Colors.barColor : Colors.lighterText, alignSelf: "flex-start", marginBottom: 5, fontSize: 14, fontWeight: "700"}}>Password</Text>
+            <Ionicons name={"lock-closed"} style={this.state.input2 ? webStyles.loginIconFocus : webStyles.loginIcon} size={15} />
             <TextInput
-              style={[this.state.input2 ? styles.loginInputFocus : styles.loginInput, {color: "white"}]}              
+              style={[this.state.input2 ? webStyles.loginInputFocus : webStyles.loginInput]}              
               placeholder="Password"
               keyboardType="default"
-              placeholderTextColor={this.state.input2 ? "#00ff79" : "#b0b4b3"}
+              placeholderTextColor={this.state.input2 ? Colors.barColor : Colors.lighterText}
               secureTextEntry={true}
               onSubmitEditing={() => this.onSignIn()}
               onFocus={this.setFocus2.bind(this, true)}
@@ -151,14 +180,14 @@ export class Login extends Component {
               onChangeText={(password) => this.setState({password: password})}
             />
             
-            <Animated.View style={[styles.error, {opacity: this.state.fadeError}, {display: this.state.displayError}]} >
-              <FontAwesomeIcon style={styles.errorIcon} icon={ faExclamationCircle } />
+            <Animated.View style={[webStyles.error, {opacity: this.state.fadeError}, {display: this.state.displayError}]} >
+              <FontAwesomeIcon style={webStyles.errorIcon} icon={ faExclamationCircle } />
               <Text style={{color: "white", fontWeight: "400",padding: 5}}>{this.state.errorMessage}</Text>
             </Animated.View>
 
-            <Button titleStyle={{color: "#dae0df",fontSize: 12,textDecorationLine:"underline"}} buttonStyle={styles.flipButton} onPress={() => this.props.navigation.navigate("Register")} color="black" title="CREATE AN ACCOUNT"/>
+            <Button titleStyle={{color: Colors.lighterText,fontSize: 14}} buttonStyle={webStyles.flipButton} containerStyle={webStyles.loginButtonContainer} onPress={() => this.props.navigation.navigate("Register")} color="black" title="CREATE AN ACCOUNT"/>
 
-            <Button titleStyle={{"color": "#121212",fontWeight: "600", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={styles.loginButtonContainer} buttonStyle={styles.loginButton} 
+            <Button loading={this.state.buttonLoading} loadingProps={{ color: Colors.primaryColor}} titleStyle={{"color": Colors.primaryColor,fontWeight: "600", fontSize:16,justifyContent:"center",alignContent:"center"}} containerStyle={webStyles.loginButtonContainer} buttonStyle={webStyles.loginButton} 
               title="LOG IN"
               onPress={() => this.onSignIn()}
               color="transparent"/>
@@ -166,7 +195,7 @@ export class Login extends Component {
           </View>
 
           
-          <StatusBar style="auto" backgroundColor="#00ff79" barStyle={Platform.OS == 'android' ? "dark-content" : "light-content"} />
+          <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle={Colors.darkMode ? "light-content" : "dark-content"} />
         </View>
     </ScrollView>
     </SafeAreaView>
@@ -174,8 +203,8 @@ export class Login extends Component {
     )
   }
 }
-
-var webStyles = StyleSheet.create({
+function setStyle(Colors) {
+  return StyleSheet.create({
     image: {
       flex: 1,
       resizeMode: "cover",
@@ -213,34 +242,11 @@ var webStyles = StyleSheet.create({
       "flexDirection": "row",
       "width": 800,
       "height": 550,
-      "shadowOffset": {
-        "width": 0,
-        "height": 0
-      },
-      "shadowRadius": 50,
-      "shadowColor": "rgba(0,0,0,0.15)",
-      "shadowOpacity": 1,
       "overflow": "hidden",
       "fontSize": 13
     },
 
-    loginimg: {
-      "width": "40%",
-      "zIndex": -1,
-    },
 
-    login: {
-      "flexDirection": "column",
-      "alignContent": "center",
-      "justifyContent": "center",
-      "textAlign": "center",
-      "alignItems": "center",
-      "width": "60%",
-      "paddingTop": 40,
-      "paddingRight": 40,
-      "paddingBottom": 40,
-      "paddingLeft": 40
-    },
 
     loginTitle: {
       "display": "flex",
@@ -249,23 +255,10 @@ var webStyles = StyleSheet.create({
       "justifyContent": "center",
       "textAlign": "center",
       "alignItems": "center",
-      "marginTop" : 20,
-      "marginBottom" : 30,
+      "marginTop" : 0,
+      "marginBottom" : 35,
     },
 
-    loginInput: {
-      "marginBottom": 10,
-      "paddingTop": 2.5,
-      "paddingRight": 2.5,
-      "paddingBottom": 2.5,
-      "paddingLeft": 40,
-      "borderColor": "#dae0df",
-      "borderWidth": 1,
-      "borderStyle": "solid",
-      borderRadius: 5,
-      "width": "100%",
-      "height": 50,
-    },
 
     loginInputFocus: {
       "marginBottom": 10,
@@ -273,13 +266,14 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 40,
-      "borderColor": "#00ff79",
+      "borderColor": Colors.barColor,
       "borderWidth": 1,
+      "backgroundColor": Colors.backgroundLightestColor,
       "borderStyle": "solid",
       borderRadius: 5,
       "width": "100%",
       "height": 50,
-
+      color: Colors.lighterText
     },
 
     loginIcon: {
@@ -290,7 +284,7 @@ var webStyles = StyleSheet.create({
       "top": 34,
       "marginTop":-15,
       "alignSelf": "flex-start",
-      "color": "#b0b4b3",
+      "color": Colors.lighterText,
     },
 
     loginIconFocus: {
@@ -301,40 +295,9 @@ var webStyles = StyleSheet.create({
       "top": 34,
       "marginTop":-15,
       "alignSelf": "flex-start",
-      "color": "#00ff79"
+      "color": Colors.barColor
     },
 
-    loginForm: {
-      "flexDirection": "column",
-      "textAlign": "center",
-      "alignItems": "center",
-      "width": "100%"
-    },
-
-    loginButton: {
-      "paddingTop": 2.5,
-      "paddingRight": 2.5,
-      "paddingBottom": 2.5,
-      "paddingLeft": 2.5,
-      "backgroundColor": "#00ff79",
-      "shadowOffset": {
-        "width": 0,
-        "height": 0
-      },
-      "shadowRadius": 30,
-      "shadowColor": "rgba(150, 255, 246, 0.7)",
-      "shadowOpacity": 1,
-      "borderWidth": 0,
-      "borderColor": "black",
-      "borderStyle": "solid",
-      "color": "white",
-      "fontFamily": "sfd",
-      "fontSize": 13,
-      "fontWeight": "400",
-      borderRadius: 5,
-      "width": 150,
-      "height": 40
-    },
 
     loginButtonContainer: {
       "width": 150,
@@ -369,13 +332,29 @@ var webStyles = StyleSheet.create({
     },
 
     flipButton: {
-      "backgroundColor" : "transparent",
-      height: 35,
-    }
-  });
-
-  const mobileStyles = StyleSheet.create({
-
+      "paddingTop": 2.5,
+      "paddingRight": 2.5,
+      "paddingBottom": 2.5,
+      "paddingLeft": 2.5,
+      "backgroundColor": Colors.backgroundDarkestColor,
+      "shadowOffset": {
+        "width": 0,
+        "height": 0
+      },
+      "shadowRadius": 30,
+      "shadowColor": "rgba(150, 255, 246, 0.7)",
+      "shadowOpacity": 1,
+      "borderWidth": 0,
+      "borderColor": "black",
+      "borderStyle": "solid",
+      "color": "white",
+      "fontFamily": "sfd",
+      "fontSize": 13,
+      "fontWeight": "400",
+      borderRadius: 7.5,
+      "width": "100%",
+      "height": 45
+    },
     login: {
       "flexDirection": "column",
       "alignContent": "center",
@@ -397,19 +376,22 @@ var webStyles = StyleSheet.create({
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 40,
-      "borderColor": "#dae0df",
+      "borderColor": Colors.backgroundDarkestColor,
+      "backgroundColor": Colors.backgroundDarkestColor,
       "borderWidth": 1,
       "borderStyle": "solid",
       borderRadius: 5,
       "width": "100%",
-      "height": 50
+      "height": 50,
+      color: Colors.lighterText
+
     },
     loginButton: {
       "paddingTop": 2.5,
       "paddingRight": 2.5,
       "paddingBottom": 2.5,
       "paddingLeft": 2.5,
-      "backgroundColor": "#00ff79",
+      "backgroundColor": Colors.secondaryColor,
       "shadowOffset": {
         "width": 0,
         "height": 0
@@ -424,12 +406,14 @@ var webStyles = StyleSheet.create({
       "fontFamily": "sfd",
       "fontSize": 13,
       "fontWeight": "400",
-      borderRadius: 5,
+      borderRadius: 7.5,
       "width": "100%",
       "height": 45
     },
     loginButtonContainer: {
       "width": "100%",
+      "marginTop": 10,
+      borderRadius: 7.5,
     },
     innerbody: {
       "flexDirection": "column",
@@ -437,21 +421,12 @@ var webStyles = StyleSheet.create({
       "height": "100%",
       "alignSelf": "flex-start",
       "justifyContent": "center",
-      "shadowOffset": {
-        "width": 0,
-        "height": 0
-      },
-      borderWidth: 0,
-      "shadowRadius": 50,
-      "shadowColor": "rgba(0,0,0,0.15)",
-      "shadowOpacity": 1,
       "overflow": "hidden",
       "fontSize": 13
-    }
+    },
   });
+}
 
-  var styles = webStyles;
-  styles = StyleSheet.flatten([webStyles,mobileStyles]);
 
   
   export default Login;

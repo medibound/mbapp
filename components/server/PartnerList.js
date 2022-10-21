@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {Component, useEffect, usetst, useRef, useState, useCallback} from 'react';
-import { StyleSheet, Text, Image, TextInput, View, ImageBackground, Dimensions, Easing, SafeAreaView, Keyboard, Animated, TouchableWithoutFeedback, TouchableHighlight, Pressable, RefreshControl,ScrollView} from 'react-native';
+import { StyleSheet, Appearance, Text, Image, TextInput, View, ImageBackground, Dimensions, Easing, SafeAreaView, Keyboard, Animated, TouchableWithoutFeedback, TouchableHighlight, Pressable, RefreshControl,ScrollView} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faLock, faMailBulk, faEnvelope, faExclamationCircle, faKey } from '@fortawesome/free-solid-svg-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,7 +8,10 @@ import { Button } from 'react-native-elements';
 
 
 import firebase from 'firebase';
-import Colors from '../vars/Colors';
+import { Objects } from '..';
+
+var webStyles;
+var Colors;
 
 
 
@@ -31,6 +34,8 @@ export default class PartnerList extends Component {
       this.state = {
         deviceArray: [],
         approved: [],
+        colors: Appearance.getColorScheme(),
+            colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)
       };
 
 
@@ -47,12 +52,14 @@ export default class PartnerList extends Component {
     async componentDidMount() {
         this.listPartners();
 
+        Appearance.addChangeListener(this.onAppThemeChanged);
+
         const db = firebase.firestore();
 
         this.__isMounted = true;
 
 
-        if (isset != true && this.__isMounted == true) {
+        if (true) {
             const observer = db.collection('users').where('accounttype',"==",1).onSnapshot(docSnapshot => {
                     console.log('reload');                        
                     if (docSnapshot.size != 0 && this.props.search != "") {
@@ -110,10 +117,13 @@ export default class PartnerList extends Component {
 
     componentWillUnmount() {
 
+        Appearance.addChangeListener(this.onAppThemeChanged);
+
+
         const db = firebase.firestore();
 
 
-        if (isset != true && this.__isMounted == true) {
+        if (isset != true) {
             const observer = db.collection('users').where('accounttype',"==",1).onSnapshot(docSnapshot => {
                 console.log('reload');                        
                 if (docSnapshot.size != 0 && this.props.search != "") {
@@ -146,6 +156,12 @@ export default class PartnerList extends Component {
         }
         this.__isMounted = false;
     }
+
+    onAppThemeChanged = (theme) => {
+        const currentTheme = Appearance.getColorScheme();
+        this.setState({colors: currentTheme});
+        this.setState({colorTheme: Objects.Vars.useColor(Appearance.getColorScheme() === "dark" ? true : false)})
+      };
 
     async queryData(category, db, search) {
         let data = null;
@@ -287,7 +303,8 @@ export default class PartnerList extends Component {
 
     render() {
 
-    
+        Colors = Objects.Vars.useColor(this.state.colors === "dark" ? true : false);
+        styles = setStyle(Colors);
 
         
         if (this.state.deviceArray.length != 0 && this.props.search != "") {
@@ -296,29 +313,32 @@ export default class PartnerList extends Component {
                 <ScrollView refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
+                            tintColor={Colors.lighterText}
                             onRefresh={()=> {this.onRefresh()}}
                         />
                 }>
-                    <View style={{marginTop: 10, padding: 10}} >
+                    <View style={{marginTop: 10, padding: 15, paddingBottom: 0,}} >
                         <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>SEARCH RESULTS FOR: "{this.props.search}"</Text>
                         {
                             this.state.deviceArray.map(d => {
                                 return(<>
-                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
+                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 7.5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
                                         <View style={styles.device}>
                                         <View style={{flexDirection:"row",color: "#777777", alignItems: "center"}}>
                                                 <Image
                                                     style={{width: 45, height: 45,  backgroundColor: Colors.secondaryColor, borderRadius: 30}}
                                                 />
-                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: Colors.lighterText, fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
+                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: Colors.lighterText, fontSize: 14, maxWidth: 150,}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
                                         </View>
-                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lighterText}/> : null}></Button>
+                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lightText}/> : null}></Button>
                 
                                     </Pressable></View>
                 
                                     </>);
                             })
                         }
+                        <View style={{height: 180, width: "100%"}}></View>
+
                     </View>
                 </ScrollView>
                 </>
@@ -330,29 +350,31 @@ export default class PartnerList extends Component {
                 <ScrollView refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
+                            tintColor={Colors.lighterText}
                             onRefresh={()=> {this.onRefresh()}}
                         />
                 }>
-                    <View style={{marginTop: 10, padding: 10}} >
+                    <View style={{marginTop: 10, padding: 15, paddingBottom: 0,}} >
                         <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>APPROVED PARTNERS ({this.state.approved.length})</Text>
                         {
                             this.state.approved.map(d => {
                                 return(<>
-                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
+                                    <View style={{borderRadius: 10, overflow: "hidden", marginBottom: 7.5,}}><Pressable android_ripple={{color: '#aaaaaa', borderless: false}}  style={{ borderRadius: 10,"backgroundColor": Colors.backgroundColor, borderColor: Colors.backgroundLightColor, borderWidth: 1.5,}} >
                                         <View style={styles.device}>
                                             <View style={{flexDirection:"row",color: "#777777", alignItems: "center"}}>
                                                 <Image
                                                     style={{width: 45, height: 45,  backgroundColor: Colors.secondaryColor, borderRadius: 30}}
                                                 />
-                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10}}></Text><Text style={{color: Colors.lighterText, fontSize: 14}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
+                                                <Text style={{fontWeight:"bold", color: "#fff", marginLeft: 10,}}></Text><Text style={{color: Colors.lighterText, fontSize: 14,  maxWidth: 150,}}>{d[1]}</Text><Ionicons name={"checkmark-circle"} size={16} color={Colors.barColor} style={{marginLeft: 5}}/></View>
                                         </View>
-                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lighterText}/> : null}></Button>
+                                        <Button title={d[2] ? "Approved" : "Approve"} onPress={() => {d[2] ? this.disapprovePartner(d[0]) : this.approvePartner(d[0])}} containerStyle={{position: "absolute",top: 10, right: 10,}}  buttonStyle={d[2] ? styles.disapproveButton : styles.approveButton} titleStyle={d[2] ? {color: Colors.lighterText} : {color: Colors.lighterText}} icon={d[2]  ? <Ionicons name={"checkmark-outline"} size={20} style={{marginRight: 5}} color={Colors.lightText}/> : null}></Button>
                 
                                     </Pressable></View>
                 
                                     </>);
                             })
                         }
+                        <View style={{height: 180, width: "100%"}}></View>
                     </View>
                 </ScrollView>
                 </>
@@ -364,10 +386,11 @@ export default class PartnerList extends Component {
                 <ScrollView contentContainerStyle={{width: "100%", height: "100%",}} refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
+                            tintColor={Colors.lighterText}
                             onRefresh={()=> {this.onRefresh()}}
                         />
                 }>
-                <View style={{marginTop: 10, padding: 10}} >
+                <View style={{marginTop: 10, padding: 15}} >
                     <Text style={{color: "#888888", textAlign: "center",fontSize: 12, paddingBottom: 10, borderBottomColor: Colors.backgroundLightColor, borderBottomWidth: 1, marginBottom: 10}}>NO RESULTS FOR: "{this.props.search}"</Text>
                     </View>
                     <View style={{width: "100%", height: "68%", justifyContent: "center", alignItems: "center", }}>
@@ -387,6 +410,7 @@ export default class PartnerList extends Component {
                 <ScrollView contentContainerStyle={{width: "100%", height: "100%",}} refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
+                            tintColor={Colors.lighterText}
                             onRefresh={()=> {this.onRefresh()}}
                         />
                 }>
@@ -405,38 +429,42 @@ export default class PartnerList extends Component {
 
     
 }
+function setStyle(Colors) {
 
-var styles = StyleSheet.create({
-    device: {
-        fontWeight: "700",
-        fontSize: 12,
-        color: "#888888",
-        width: "100%",
-        height: 60,
-        padding: 0,
-        paddingLeft: 10,
-        paddingRight: 10,
-        justifyContent: "center",
-        overflow: "visible",
-    },
-    approveButton: {
-        backgroundColor: Colors.backgroundColor,
-        color: Colors.backgroundLightColor,
-        width: 100,
-        borderRadius: 10,
-        zIndex: 100,
-        height: 40,
-        borderColor: Colors.backgroundLightColor,
-        borderWidth: 2,
-    },
-    disapproveButton: {
-        backgroundColor: Colors.backgroundLightColor,
-        color: Colors.primaryColor,
-        width: 115,
-        height: 40,
-        borderRadius: 10,
-        zIndex: 100,
-        borderColor: Colors.backgroundLightColor,
-        borderWidth: 2,
-    }
-});
+    return StyleSheet.create({
+        device: {
+            fontWeight: "700",
+            fontSize: 12,
+            color: "#888888",
+            width: "100%",
+            height: 60,
+            padding: 0,
+            paddingLeft: 10,
+            paddingRight: 10,
+            justifyContent: "center",
+            overflow: "visible",
+            backgroundColor: Colors.backgroundLightColor
+        },
+        approveButton: {
+            backgroundColor: Colors.backgroundColor,
+            color: Colors.backgroundLightColor,
+            width: 100,
+            borderRadius: 10,
+            zIndex: 100,
+            height: 40,
+            fontSize: 11,
+            overflow: "visible"
+        },
+        disapproveButton: {
+            backgroundColor: Colors.backgroundColor,
+            color: Colors.lightColor,
+            width: 130,
+            height: 40,
+            borderRadius: 10,
+            zIndex: 100,
+            fontSize: 11,
+            overflow: "visible"
+        }
+    });
+
+}

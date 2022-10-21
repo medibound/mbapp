@@ -7,6 +7,9 @@ import PartnerList from './server/PartnerList';
 import DeviceOptions from './server/DeviceOptions';
 import UsersList from './server/UsersList';
 import Colors from './vars/Colors';
+import useColor from './vars/useColor'
+import { default as withPressAnimation } from './server/withPressAnimation';
+
 
 export const Objects = { 
     Navigation: {
@@ -19,8 +22,10 @@ export const Objects = {
         PartnerList,
         DeviceOptions,
         UsersList,
+        withPressAnimation
     },
     Vars: {
         Colors,
+        useColor
     }
 }

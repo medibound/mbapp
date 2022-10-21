@@ -74,7 +74,7 @@ class Devices extends Component {
                     <Objects.Server.DeviceList pass={this.onOpenDeviceOptionsHandler}></Objects.Server.DeviceList>
                     
 
-                    <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle="dark-content" />
+                    <StatusBar style="auto" backgroundColor={Colors.barColor} barStyle={Colors.darkMode ? "light-content" : "dark-content"} />
                 
                 </SafeAreaView>
             </View>

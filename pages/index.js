@@ -1,5 +1,5 @@
 import Pathways from "./index/Pathways";
-import Device from "./index/Device";
+import Devices from "./index/Devices";
 import Account from "./index/Account";
 import Partners from "./index/Partners";
 import Reports from "./index/Reports";
@@ -10,7 +10,7 @@ import Register from "./auth/Register";
 
 export const Pages = { 
     Pathways,
-    Device,
+    Devices,
     Account,
     Reports,
     Partners,
